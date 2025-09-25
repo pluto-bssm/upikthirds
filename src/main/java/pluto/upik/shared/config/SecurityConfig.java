@@ -123,7 +123,8 @@ public class SecurityConfig {
                 "http://10.129.57.38:3000",
                 "http://10.150.149.100:3000",
                 "http://10.129.57.46:3000",
-                "https://upikkkkk-taehyun00s-projects.vercel.app"
+                "https://upikkkkk-taehyun00s-projects.vercel.app",
+                "https://upik-659794985248.asia-northeast3.run.app"
 
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
