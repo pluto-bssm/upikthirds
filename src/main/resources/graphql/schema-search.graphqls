@@ -1,0 +1,11 @@
+type SearchQuery {
+    execute(query: String!, limit: Int, includeAiSummary: Boolean): SearchResponse!
+}
+
+type SearchResponse {
+    query: String!
+    guides: [KeywordGuide]!
+    aiSummary: String
+    totalResults: Int!
+    searchTimeMs: Int!
+}

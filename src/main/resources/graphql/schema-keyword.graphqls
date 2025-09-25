@@ -1,0 +1,20 @@
+type KeywordGuideQuery {
+    searchByKeyword(keyword: String!): [KeywordGuide!]!
+    searchSimilarByTitle(title: String!): [KeywordGuide!]!
+}
+
+type KeywordGuide {
+    id: ID!
+    title: String!
+    keyword: String!
+    content: String!
+    createdAt: String!
+    guideType: String
+    category: String
+    likeCount: Int
+    revoteCount: Int
+    userId: ID
+    userName: String
+    userProfileImage: String
+    userEmail: String
+}

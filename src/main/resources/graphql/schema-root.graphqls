@@ -1,0 +1,30 @@
+type Query {
+    guide: GuideQuery
+    keywordGuide: KeywordGuideQuery
+    report: ReportQuery
+    guidesByCategory(category: String!): [Guide]
+    getAllGuides(page: Int = 0, size: Int = 10, sortBy: String = "date"): GuidePage!
+    guideById(id: ID!): GuideDetail
+    voteResponse: VoteResponseQuery
+    vote: VoteQuery
+    tail: TailQuery
+    notification: NotificationQuery
+    bookmark: BookmarkQuery
+    revote: RevoteQuery
+    aiQuota: AIQuotaQuery
+    board: BoardQuery
+    search: SearchQuery
+}
+
+type Mutation {
+    guide: GuideMutation
+    report: ReportMutation
+    vote: VoteMutation
+    voteResponse: VoteResponseMutation
+    tail: TailMutation
+    notification: NotificationMutation
+    bookmark: BookmarkMutation
+    revote: RevoteMutation
+    aiQuota: AIQuotaMutation
+    board: BoardMutation
+}

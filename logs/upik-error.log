@@ -1,0 +1,15 @@
+2025-09-25 18:59:23.137 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in pluto.upik.domain.revote.resolver.RevoteMutationResolver required a bean of type 'pluto.upik.domain.revote.service.RevoteServiceInterface' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'pluto.upik.domain.revote.service.RevoteServiceInterface' in your configuration.
+

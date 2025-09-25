@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  upik:
+    build: .
+    container_name: upik-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

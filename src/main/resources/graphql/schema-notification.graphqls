@@ -1,0 +1,20 @@
+type NotificationQuery {
+    getNotifications: [NotificationResponse!]!
+    getUnreadNotifications: [NotificationResponse!]!
+    getUnreadNotificationCount: Int!
+}
+
+type NotificationMutation {
+    markNotificationAsRead(notificationId: ID!): Boolean!
+    markAllNotificationsAsRead: Boolean!
+}
+
+type NotificationResponse {
+    id: ID!
+    type: String!
+    title: String!
+    content: String!
+    referenceId: ID!
+    read: Boolean!
+    createdAt: String!
+}

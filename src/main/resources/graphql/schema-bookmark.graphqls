@@ -1,0 +1,18 @@
+type BookmarkQuery {
+    getBookmarks: [BookmarkResponse]
+    getBookmarkedGuides: [Guide]
+    isBookmarked(guideId: ID!): Boolean
+    getBookmarkCount(guideId: ID!): Int
+    getGuidesSortedByBookmarkCount: [Guide]
+}
+
+type BookmarkMutation {
+    toggleBookmark(guideId: ID!): Boolean
+}
+
+type BookmarkResponse {
+    id: ID
+    userId: ID
+    guideId: ID
+    createdAt: String
+}

@@ -1,0 +1,330 @@
+type RevoteQuery {
+    """특정 가이드에 대한 재투표 요청 목록을 조회합니다."""
+    getRevoteRequestsByGuideId(guideId: ID!): [RevoteRequestResponse!]!
+
+    """현재 사용자의 재투표 요청 목록을 조회합니다."""
+    getMyRevoteRequests: [RevoteRequestResponse!]!
+
+    """현재 사용자가 특정 가이드에 대해 재투표를 요청했는지 확인합니다."""
+    hasUserRequestedRevote(guideId: ID!): Boolean!
+
+    """특정 가이드의 재투표 통계를 조회합니다."""
+    getRevoteStatistics(guideId: ID!): RevoteStatistics
+}
+
+"""관리자 전용 재투표 쿼리"""
+type RevoteAdminQuery {
+    """모든 재투표 요청을 페이징하여 조회합니다. (관리자 전용)"""
+    getAllRevoteRequests(
+        page: Int = 0
+        size: Int = 20
+        status: String
+        sortBy: String = "createdAt"
+        sortDirection: String = "DESC"
+    ): RevoteRequestPage!
+
+    """관리자 대시보드 통계를 조회합니다."""
+    getDashboardStats: AdminDashboardStats!
+
+    """실시간 모니터링 데이터를 조회합니다."""
+    getRealtimeMonitoring: RealtimeMonitoring!
+
+    """특정 가이드의 상세 재투표 통계를 조회합니다."""
+    getGuideRevoteAnalysis(guideId: ID!): GuideRevoteStats!
+}
+
+type RevoteMutation {
+    """재투표 요청을 생성합니다."""
+    createRevote(input: RevoteRequestInput!): RevoteRequestResponse!
+
+    """재투표 요청을 승인합니다. (관리자 전용)"""
+    approveRevoteRequest(requestId: ID!): RevoteRequestResponse!
+
+    """재투표 요청을 거부합니다. (관리자 전용)"""
+    rejectRevoteRequest(requestId: ID!): RevoteRequestResponse!
+
+    """재투표 요청을 일괄 승인합니다. (관리자 전용)"""
+    bulkApproveRevoteRequests(requestIds: [ID!]!, comment: String): BulkRevoteActionResult!
+
+    """재투표 요청을 일괄 거부합니다. (관리자 전용)"""
+    bulkRejectRevoteRequests(requestIds: [ID!]!, reason: String): BulkRevoteActionResult!
+
+    """승인된 재투표를 실제로 실행합니다. (관리자 전용)"""
+    executeRevote(requestId: ID!): RevoteExecutionResult!
+}
+
+"""재투표 요청 입력 데이터"""
+input RevoteRequestInput {
+    """재투표를 요청할 가이드 ID (필수)"""
+    guideId: ID!
+
+    """재투표 요청 이유 (필수, 최대 255자)"""
+    reason: String!
+
+    """재투표 요청 상세 이유 (선택사항, 최대 1000자)"""
+    detailReason: String
+}
+
+"""재투표 요청 응답 데이터"""
+type RevoteRequestResponse {
+    """재투표 요청 ID"""
+    id: ID
+
+    """요청한 사용자 ID"""
+    userId: ID
+
+    """재투표가 요청된 가이드 ID"""
+    guideId: ID
+
+    """재투표 요청 이유"""
+    reason: String
+
+    """재투표 요청 상세 이유"""
+    detailReason: String
+
+    """재투표 요청 상태 (PENDING, APPROVED, REJECTED)"""
+    status: String
+
+    """재투표 요청 상태 설명"""
+    statusDescription: String
+
+    """재투표 요청 생성 일시"""
+    createdAt: String
+
+    """재투표 요청 수정 일시"""
+    updatedAt: String
+}
+
+"""재투표 통계 정보"""
+type RevoteStatistics {
+    """가이드 ID"""
+    guideId: ID!
+
+    """총 재투표 요청 수"""
+    totalCount: Int!
+
+    """대기중인 재투표 요청 수"""
+    pendingCount: Int!
+
+    """승인된 재투표 요청 수"""
+    approvedCount: Int!
+
+    """거부된 재투표 요청 수"""
+    rejectedCount: Int!
+
+    """승인률 (%)"""
+    approvalRate: Float!
+
+    """거부율 (%)"""
+    rejectionRate: Float!
+}
+
+"""페이징된 재투표 요청 목록"""
+type RevoteRequestPage {
+    """재투표 요청 목록"""
+    content: [RevoteRequestResponse!]!
+
+    """현재 페이지 번호"""
+    number: Int!
+
+    """페이지 크기"""
+    size: Int!
+
+    """총 요소 수"""
+    totalElements: Int!
+
+    """총 페이지 수"""
+    totalPages: Int!
+
+    """첫 번째 페이지 여부"""
+    first: Boolean!
+
+    """마지막 페이지 여부"""
+    last: Boolean!
+}
+
+"""일괄 재투표 작업 결과"""
+type BulkRevoteActionResult {
+    """총 처리 요청 수"""
+    totalCount: Int!
+
+    """성공 수"""
+    successCount: Int!
+
+    """실패 수"""
+    failCount: Int!
+
+    """작업 타입"""
+    action: String!
+
+    """코멘트"""
+    comment: String
+
+    """처리 완료 시간"""
+    processedAt: String!
+
+    """성공률 (%)"""
+    successRate: Float!
+}
+
+"""재투표 실행 결과"""
+type RevoteExecutionResult {
+    """재투표 요청 ID"""
+    requestId: ID!
+
+    """원본 투표 ID"""
+    originalVoteId: ID
+
+    """새로운 투표 ID"""
+    newVoteId: ID
+
+    """원본 가이드 ID"""
+    originalGuideId: ID
+
+    """새로운 가이드 ID"""
+    newGuideId: ID
+
+    """실행 성공 여부"""
+    success: Boolean!
+
+    """오류 메시지 (실패 시)"""
+    errorMessage: String
+
+    """실행 완료 시간"""
+    executedAt: String!
+}
+
+"""관리자 대시보드 통계"""
+type AdminDashboardStats {
+    """총 재투표 요청 수"""
+    totalRequests: Int!
+
+    """대기중 요청 수"""
+    pendingRequests: Int!
+
+    """승인된 요청 수"""
+    approvedRequests: Int!
+
+    """거부된 요청 수"""
+    rejectedRequests: Int!
+
+    """실행된 재투표 수"""
+    executedRevotes: Int!
+
+    """오늘 요청 수"""
+    todayRequests: Int!
+
+    """주간 요청 수"""
+    weeklyRequests: Int!
+
+    """월간 요청 수"""
+    monthlyRequests: Int!
+
+    """평균 처리 시간 (시간)"""
+    averageProcessingTimeHours: Float!
+
+    """승인률 (%)"""
+    approvalRate: Float!
+
+    """거부율 (%)"""
+    rejectionRate: Float!
+
+    """가장 많이 요청받은 가이드들"""
+    topRequestedGuides: [GuideRevoteStats!]!
+
+    """가장 활발한 사용자들"""
+    mostActiveUsers: [UserRevoteStats!]!
+
+    """마지막 업데이트 시간"""
+    lastUpdated: String!
+}
+
+"""가이드별 재투표 통계"""
+type GuideRevoteStats {
+    """가이드 ID"""
+    guideId: ID!
+
+    """가이드 제목"""
+    guideTitle: String!
+
+    """가이드 카테고리"""
+    guideCategory: String!
+
+    """재투표 요청 수"""
+    revoteRequestCount: Int!
+
+    """승인된 수"""
+    approvedCount: Int!
+
+    """거부된 수"""
+    rejectedCount: Int!
+
+    """승인률 (%)"""
+    approvalRate: Float!
+}
+
+"""사용자별 재투표 통계"""
+type UserRevoteStats {
+    """사용자 ID"""
+    userId: ID!
+
+    """사용자명"""
+    username: String!
+
+    """총 요청 수"""
+    totalRequests: Int!
+
+    """승인된 요청 수"""
+    approvedRequests: Int!
+
+    """거부된 요청 수"""
+    rejectedRequests: Int!
+
+    """승인률 (%)"""
+    approvalRate: Float!
+}
+
+"""실시간 모니터링 데이터"""
+type RealtimeMonitoring {
+    """현재 활성 요청 수"""
+    currentActiveRequests: Int!
+
+    """처리 대기열 수"""
+    processingQueue: Int!
+
+    """평균 응답 시간"""
+    avgResponseTime: String!
+
+    """오류율"""
+    errorRate: String!
+
+    """오늘 신규 요청 수"""
+    todayNewRequests: Int!
+
+    """오늘 처리 완료 수"""
+    todayProcessedRequests: Int!
+
+    """마지막 업데이트 시간"""
+    lastUpdated: String!
+
+    """최근 활동 목록"""
+    recentActivities: [RecentActivity!]!
+}
+
+"""최근 활동"""
+type RecentActivity {
+    """활동 타입"""
+    type: String!
+
+    """활동 설명"""
+    description: String!
+
+    """사용자 ID"""
+    userId: ID
+
+    """가이드 ID"""
+    guideId: ID
+
+    """활동 시간"""
+    timestamp: String!
+}

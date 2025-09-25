@@ -1,0 +1,18 @@
+# IamDTO 타입 정의
+type IamDTO {
+    id: ID
+    username: String
+    name: String
+    email: String
+    role: String
+}
+
+# IamQuery 타입 정의
+type IamQuery {
+    getCurrentUser: IamDTO
+}
+
+# Query 타입에 iam 필드 추가
+extend type Query {
+    iam: IamQuery
+}

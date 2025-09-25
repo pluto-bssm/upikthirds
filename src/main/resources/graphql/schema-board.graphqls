@@ -1,0 +1,94 @@
+type Board {
+  id: ID!
+  title: String!
+  content: String!
+  userId: ID!
+  userName: String!
+  userProfileImage: String
+  createdAt: String!
+  updatedAt: String
+  bookmarkCount: Int!
+  commentCount: Int!
+  viewCount: Int!
+  isBookmarked: Boolean
+}
+
+type Comment {
+  id: ID!
+  boardId: ID!
+  content: String!
+  userId: ID!
+  userName: String!
+  userProfileImage: String
+  createdAt: String!
+  updatedAt: String
+  parentId: ID
+  replies: [Comment!]
+}
+
+type BoardPage {
+  content: [Board!]!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+type CommentPage {
+  content: [Comment!]!
+  totalElements: Int!
+  totalPages: Int!
+}
+
+input CreateBoardInput {
+  title: String!
+  content: String!
+}
+
+input UpdateBoardInput {
+  title: String
+  content: String
+}
+
+input CreateCommentInput {
+  boardId: ID!
+  content: String!
+  parentId: ID
+}
+
+input ReportInput {
+  reason: String!
+  detail: String!
+}
+
+type BoardQuery {
+  # 질문 게시판 질문 리스트
+  getQuestionList(page: Int!, size: Int!): BoardPage!
+
+  # 질문 게시판 검색하기
+  searchQuestions(keyword: String!, page: Int!, size: Int!): BoardPage!
+
+  # 질문 자세히 보기
+  getQuestionDetail(boardId: ID!): Board
+
+  # 댓글 리스트 조회
+  getComments(boardId: ID!, page: Int!, size: Int!): CommentPage!
+}
+
+type BoardMutation {
+  # 게시판 질문 작성
+  createQuestion(input: CreateBoardInput!): Board!
+
+  # 질문 수정
+  updateQuestion(boardId: ID!, input: UpdateBoardInput!): Board!
+
+  # 질문 삭제
+  deleteQuestion(boardId: ID!): Boolean!
+
+  # 댓글 작성
+  createComment(input: CreateCommentInput!): Comment!
+
+  # 게시판 글 신고하기
+  reportBoard(boardId: ID!, reason: String!, detail: String!): Boolean!
+
+  # 게시판 댓글 신고하기
+  reportComment(commentId: ID!, reason: String!, detail: String!): Boolean!
+}

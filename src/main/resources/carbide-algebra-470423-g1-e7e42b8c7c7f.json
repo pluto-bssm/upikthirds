@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "carbide-algebra-470423-g1",
+  "private_key_id": "e7e42b8c7c7fe9206968e110528916e4dbfec06d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCtK+tMWQos4j+3\nva8DCTcBZdCwQvkR0HHS8d8xgu9duhs8XZ5sPNxMT626js5Lj8NopPPFvZKIQ9RD\ntpZvgAVrVbZgAO7fNdkpaAzsggj/bfDpwXU9lP5PdTRSPYQ+84rMB3qWgJ+mliXi\n4l3d0R75Zo7CO1Tr3Ug0ZB/BA/30zdliIssjVOGIRHJVK+dlwY0hiZ8/8olO5JmB\nn4kkOICZeQ3RoTy6U4KGnPGGqDlEo1hDFNeWBlga7ZuA66noMUEq2ljwgsCg+8vS\nOwGD6CYq4B+ozcNbgOrHDNwxeOq29VZnOZb0xP/DDoxowb05u2hrCw51t9Gxs0kM\n1yG0ManrAgMBAAECggEAA/wSufsChO3f0XaH5GX94gZZuvSPjp1hQR1XqWf94gY6\nQjVVQ+BSoV7j/Hr0vEBemrXQ9ifai1AkPjqhU4d6mHGsdKEQ3gn7KTy/r2F+m4II\nHRjafcRD5cgooAvSUzB/bRpu86+Z/NdPn9zdlBEPyWVWu5lp5tN8qdfz8xkIau2X\n5dWfpkXVSAbKJcoQziATIXelqoGiBQ0QQdraN/m80HWIz/FgGIJ6HOtNIvx3g/MR\nrW9cULlfCMGeal/GrGYlLbBwlvntcTKsTdIzOX/PdeG9JcJtrGetFAa6fH6GJxek\nrq7wMNh+yusjRzcfKzbX9ljTqY1okYdj7VE2M6+kwQKBgQDsTrvKpw6Mbs8WkXT0\nahoADVMz+lamK5Y7AM2hh8uF4chd4KhWp38dU4lJq9LcgTpg+Ox6+Ef4kXQifxAe\n/LAIceUwFnFqr4W/MXKed4eEp3QTKAJPT7WQ7YTkItDHms91P8zYBnAc3dCFjU6J\ngbLlFQGXqfjj1xNAKvafUmmi2QKBgQC7mkYn4zzmx0gsIhDSW0AffawKe19c6RBa\nnM/a6Hx2nCExY1wIYoUuTKPxe36y7m4fRIyQNZA9OTx/zIUgR7dHArLnwztdj6i5\nBYkO5dXxWnnLZmJMLjJQZMSoD9fmZom8xQcUhwARK4kHIwV4lb1HYMSKFZR34Wwu\nHBTgnecwYwKBgQDPQosxRm7bO0FFURTcXscpLobAexxOqMIeRCkXOSyH461CsY3U\nWxqBlUg/poXOQ0X50bpQbL1rReAvdXSlSQn4jjTvhW+6m/JZ7DvUw4/ICLslJh1I\nhOgCEmFRWzv1JlI5S1kWTCc/GkoPKQ4uSuSmSlNYO4uCApzu1f/zY2wlmQKBgFen\nbJIkhYcao6kjPZLb2ekc0e6P2G3T47VCwYd5yvWsW4H098JfLfUFEDC7T+aQqtln\nMPoMXNmOTas0xxrfB05hf2/0c19yyRWx9WkFkGHVsUSNEO6hQxb3Dj+sL2dSj5ao\nxHcd4LUlD0BLZ7oA1NBt8UbHcHhW1jHxIvwUKzobAoGBAObAZFN+NpJcs2W9ml/h\n7ULIS2olDJ1I+cf3cek9oaxfYgdQBi6w1kpCUctY7aVkeo0yNYXR+jNbco1oTXIo\nVFq9sQM7upYeWD1Qk1j3DAsYAA/T/KTweh7FHJ05cpZ2HXld3Khrjbb5vXGSX20l\nxlg1H3s3Q0z1G6YT3A/cFyO4\n-----END PRIVATE KEY-----\n",
+  "client_email": "vertex-ai@carbide-algebra-470423-g1.iam.gserviceaccount.com",
+  "client_id": "114053608584186261735",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vertex-ai%40carbide-algebra-470423-g1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,0 +1,18 @@
+type AIQuotaQuery {
+    getMyQuota: AIQuotaResponse!
+    canUseAI: Boolean!
+}
+
+type AIQuotaResponse {
+    usageCount: Int!
+    maxUsageCount: Int!
+    remainingCount: Int!
+    lastResetDate: String!
+    canUseNow: Boolean!
+}
+
+type AIQuotaMutation {
+    useAIQuota: AIQuotaResponse!
+    resetAIQuota(userId: ID!): AIQuotaResponse!
+    increaseAIQuota(amount: Int!): AIQuotaResponse!
+}
