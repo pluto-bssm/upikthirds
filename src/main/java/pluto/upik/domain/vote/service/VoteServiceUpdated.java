@@ -81,11 +81,20 @@ public class VoteServiceUpdated {
      * 주어진 사용자 ID에 대해 모든 투표 목록과 각 투표의 옵션별 통계, 사용자의 참여 여부를 반환합니다.
      *
      * @param userId 투표 참여 여부를 확인할 사용자 ID
+     * @param includeExpired 종료된 투표 포함 여부 (true: 전체, false: 진행 중만)
      * @return 각 투표에 대한 옵션별 응답 수, 비율, 총 응답 수, 사용자의 투표 참여 여부가 포함된 VotePayload 리스트
      */
     @Transactional(readOnly = true)
-    public List<VotePayload> getAllVotes(UUID userId) {
-        List<Vote> votes = voteRepository.findAll();
+    public List<VotePayload> getAllVotes(UUID userId, boolean includeExpired) {
+        LocalDate currentDate = LocalDate.now();
+        List<Vote> votes;
+
+        if (includeExpired) {
+            votes = voteRepository.findAll();
+        } else {
+            votes = voteRepository.findActiveVotes(currentDate);
+        }
+
         List<VotePayload> votePayloads = new ArrayList<>();
 
         for (Vote vote : votes) {
@@ -177,21 +186,34 @@ public class VoteServiceUpdated {
     }
 
     /**
-     * 응답 수가 가장 많은 OPEN 상태의 투표 3개를 조회하여 각 투표의 옵션별 통계와 함께 반환합니다.
+     * 응답 수가 가장 많은 투표 3개를 조회하여 각 투표의 옵션별 통계와 함께 반환합니다.
      *
      * 각 투표에 대해 옵션별 응답 수와 비율을 계산하며, 사용자가 투표하지 않은 것으로 표시됩니다.
      *
-     * @return 응답 수 기준 상위 3개의 OPEN 상태 투표에 대한 옵션 통계가 포함된 VotePayload 리스트
+     * @param includeExpired 종료된 투표 포함 여부 (true: 전체, false: OPEN 상태만)
+     * @return 응답 수 기준 상위 3개 투표에 대한 옵션 통계가 포함된 VotePayload 리스트
      */
     @Transactional(readOnly = true)
-    public List<VotePayload> getMostPopularOpenVote() {
-        List<Vote> openVotes = voteRepository.findByStatus(Vote.Status.OPEN);
-        if (openVotes.isEmpty()) {
+    public List<VotePayload> getMostPopularOpenVote(boolean includeExpired) {
+        LocalDate currentDate = LocalDate.now();
+        List<Vote> votes;
+
+        if (includeExpired) {
+            votes = voteRepository.findAll();
+        } else {
+            // OPEN 상태이면서 날짜가 지나지 않은 투표만 조회
+            List<Vote> openVotes = voteRepository.findByStatus(Vote.Status.OPEN);
+            votes = openVotes.stream()
+                .filter(vote -> !vote.isFinishedByDate(currentDate))
+                .collect(Collectors.toList());
+        }
+
+        if (votes.isEmpty()) {
             return Collections.emptyList();
         }
 
         Map<Vote, Long> voteResponseCounts = new HashMap<>();
-        for (Vote vote : openVotes) {
+        for (Vote vote : votes) {
             Long responseCount = voteResponseRepository.countByVoteId(vote.getId());
             voteResponseCounts.put(vote, responseCount);
         }
@@ -229,19 +251,32 @@ public class VoteServiceUpdated {
     }
 
     /**
-     * 응답 수가 가장 적은 OPEN 상태의 투표를 조회하여 옵션별 통계와 함께 반환합니다.
+     * 응답 수가 가장 적은 투표를 조회하여 옵션별 통계와 함께 반환합니다.
      *
-     * @return 응답 수가 가장 적은 OPEN 상태 투표의 통계 정보가 포함된 VotePayload 객체를 반환하며, OPEN 상태 투표가 없으면 null을 반환합니다.
+     * @param includeExpired 종료된 투표 포함 여부 (true: 전체, false: OPEN 상태만)
+     * @return 응답 수가 가장 적은 투표의 통계 정보가 포함된 VotePayload 객체를 반환하며, 투표가 없으면 null을 반환합니다.
      */
     @Transactional(readOnly = true)
-    public VotePayload getLeastPopularOpenVote() {
-        List<Vote> openVotes = voteRepository.findByStatus(Vote.Status.OPEN);
-        if (openVotes.isEmpty()) {
+    public VotePayload getLeastPopularOpenVote(boolean includeExpired) {
+        LocalDate currentDate = LocalDate.now();
+        List<Vote> votes;
+
+        if (includeExpired) {
+            votes = voteRepository.findAll();
+        } else {
+            // OPEN 상태이면서 날짜가 지나지 않은 투표만 조회
+            List<Vote> openVotes = voteRepository.findByStatus(Vote.Status.OPEN);
+            votes = openVotes.stream()
+                .filter(vote -> !vote.isFinishedByDate(currentDate))
+                .collect(Collectors.toList());
+        }
+
+        if (votes.isEmpty()) {
             return null;
         }
 
         Map<Vote, Long> voteResponseCounts = new HashMap<>();
-        for (Vote vote : openVotes) {
+        for (Vote vote : votes) {
             Long responseCount = voteResponseRepository.countByVoteId(vote.getId());
             voteResponseCounts.put(vote, responseCount);
         }
@@ -277,11 +312,20 @@ public class VoteServiceUpdated {
      * 지정한 사용자가 생성한 모든 투표와 각 투표의 옵션별 통계 정보를 조회합니다.
      *
      * @param userId 투표를 생성한 사용자의 UUID
+     * @param includeExpired 종료된 투표 포함 여부 (true: 전체, false: 진행 중만)
      * @return 사용자가 생성한 투표 목록과 각 투표의 옵션별 응답 수, 비율, 총 응답 수, 사용자의 참여 여부가 포함된 리스트
      */
     @Transactional(readOnly = true)
-    public List<VotePayload> getVotesByUserId(UUID userId) {
-        List<Vote> votes = voteRepository.findByUserId(userId);
+    public List<VotePayload> getVotesByUserId(UUID userId, boolean includeExpired) {
+        LocalDate currentDate = LocalDate.now();
+        List<Vote> votes;
+
+        if (includeExpired) {
+            votes = voteRepository.findByUserId(userId);
+        } else {
+            votes = voteRepository.findActiveVotesByUserId(userId, currentDate);
+        }
+
         List<VotePayload> votePayloads = new ArrayList<>();
 
         for (Vote vote : votes) {
@@ -316,12 +360,14 @@ public class VoteServiceUpdated {
     }
 
     /**
-     * 더미 사용자 ID를 사용하여 해당 사용자가 생성한 모든 투표 목록을 반환합니다.
+     * 현재 사용자가 생성한 투표 목록을 반환합니다.
      *
-     * @return 더미 사용자가 생성한 투표 목록 리스트
+     * @param userId 사용자 ID
+     * @param includeExpired 종료된 투표 포함 여부 (true: 전체, false: 진행 중만)
+     * @return 사용자가 생성한 투표 목록 리스트
      */
     @Transactional(readOnly = true)
-    public List<VotePayload> getMyVotes(UUID userId) {
-        return getVotesByUserId(userId);
+    public List<VotePayload> getMyVotes(UUID userId, boolean includeExpired) {
+        return getVotesByUserId(userId, includeExpired);
     }
 }

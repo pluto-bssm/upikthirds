@@ -396,6 +396,32 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * IllegalStateException 처리
+     * 비즈니스 로직 실행 중 상태가 올바르지 않은 경우
+     * (예: 투표가 종료되었거나, 이미 참여한 경우)
+     *
+     * @param ex 발생한 예외
+     * @param request 웹 요청
+     * @return 오류 응답
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex, WebRequest request) {
+        String path = request.getDescription(false).replace("uri=", "");
+        log.error("잘못된 상태 - path: {}, message: {}", path, ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "ILLEGAL_STATE",
+                ex.getMessage() != null ? ex.getMessage() : "현재 요청을 처리할 수 없는 상태입니다.",
+                path,
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * 처리되지 않은 모든 예외 처리
      *
      * @param ex 발생한 예외

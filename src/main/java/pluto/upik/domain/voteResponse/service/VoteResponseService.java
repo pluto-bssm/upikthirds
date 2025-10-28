@@ -52,9 +52,18 @@ public class VoteResponseService {
         log.info(user.toString());
         log.info(vote.toString());
         log.info(option.toString());
-        // 4. 투표 상태 확인
+
+        // 4. 투표 상태 확인 (Status와 날짜 모두 확인)
+        LocalDate currentDate = LocalDate.now();
+
+        // 투표가 CLOSED 상태인 경우
         if (vote.getStatus() != Vote.Status.OPEN) {
             throw new IllegalStateException("투표가 종료되었습니다.");
+        }
+
+        // 투표 종료 날짜가 지난 경우
+        if (vote.isFinishedByDate(currentDate)) {
+            throw new IllegalStateException("투표 마감 기한이 지났습니다. (마감일: " + vote.getFinishedAt() + ")");
         }
 
         // 5. 옵션이 해당 투표에 속하는지 확인
