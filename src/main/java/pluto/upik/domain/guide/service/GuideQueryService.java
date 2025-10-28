@@ -32,7 +32,7 @@ public class GuideQueryService implements GuideQueryServiceInterface {
     /**
      * 지정한 카테고리에 해당하는 모든 가이드 목록을 조회하여 GuideResponse 리스트로 반환합니다.
      *
-     * 카테고리에 해당하는 가이드가 없을 경우 ResourceNotFoundException이 발생합니다.
+     * 카테고리에 해당하는 가이드가 없을 경우 빈 리스트를 반환합니다.
      * 각 GuideResponse에는 가이드의 ID, 제목, 내용, 생성일, 좋아요 수, 투표 ID가 포함됩니다.
      *
      * @param category 조회할 가이드의 카테고리
@@ -47,8 +47,8 @@ public class GuideQueryService implements GuideQueryServiceInterface {
             log.info("카테고리별 가이드 조회 결과 - category: {}, 조회된 가이드 수: {}", category, guides.size());
 
             if (guides == null || guides.isEmpty()) {
-                log.warn("카테고리별 가이드 조회 실패 - 가이드 없음 (category: {})", category);
-                throw new ResourceNotFoundException("카테고리에 해당하는 가이드가 없습니다: " + category);
+                log.info("카테고리별 가이드 조회 결과 없음 - category: {}, 빈 리스트 반환", category);
+                return List.of(); // 빈 배열 반환
             }
 
             List<GuideResponse> responses = guides.stream()
@@ -64,11 +64,9 @@ public class GuideQueryService implements GuideQueryServiceInterface {
 
             log.info("Number of guides found: {}", responses.size());
             return responses;
-        } catch (ResourceNotFoundException e) {
-            throw e; // 위에서 던진 거 그대로 전달
         } catch (Exception e) {
             log.error("가이드 조회 중 예외 발생 - category: {}, error: {}", category, e.getMessage(), e);
-            throw new BusinessException("가이드 조회 중 오류가 발생했습니다.");
+            throw new BusinessException("가이드 조회 중 오류가 발생했습니다.", e);
         }
     }
     

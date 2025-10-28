@@ -26,9 +26,10 @@ public class KeywordGuideService implements KeywordGuideServiceInterface {
     /**
      * 주어진 키워드를 포함하는 제목을 가진 가이드 목록을 검색하여, 각 가이드와 관련된 상세 정보 및 사용자 정보를 포함한 응답 리스트를 반환합니다.
      *
+     * 검색 결과가 없을 경우 빈 리스트를 반환합니다.
+     *
      * @param keyword 가이드 제목에서 검색할 키워드
      * @return 키워드가 포함된 가이드의 상세 정보와 사용자 정보를 담은 KeywordGuideResponse 리스트
-     * @throws ResourceNotFoundException 해당 키워드로 검색된 가이드가 없을 경우 발생
      * @throws BusinessException 가이드 검색 중 예기치 않은 오류가 발생한 경우 발생
      */
     @Override
@@ -40,8 +41,8 @@ public class KeywordGuideService implements KeywordGuideServiceInterface {
             log.info("키워드 기반 가이드 검색 결과 - keyword: {}, 검색된 가이드 수: {}", keyword, guides.size());
 
             if (guides == null || guides.isEmpty()) {
-                log.warn("키워드 기반 가이드 검색 실패 - 가이드 없음 (keyword: {})", keyword);
-                throw new ResourceNotFoundException("해당 키워드로 검색된 가이드가 없습니다: " + keyword);
+                log.info("키워드 기반 가이드 검색 결과 없음 - keyword: {}, 빈 리스트 반환", keyword);
+                return List.of(); // 빈 배열 반환
             }
 
             List<KeywordGuideResponse> responses = guides.stream()
@@ -73,11 +74,9 @@ public class KeywordGuideService implements KeywordGuideServiceInterface {
 
             log.info("키워드 기반 가이드 검색 완료 - keyword: {}, 결과 개수: {}", keyword, responses.size());
             return responses;
-        } catch (ResourceNotFoundException e) {
-            throw e;
         } catch (Exception e) {
             log.error("가이드 키워드 검색 중 예외 발생 - keyword: {}, error: {}", keyword, e.getMessage(), e);
-            throw new BusinessException("가이드 키워드 검색 중 오류가 발생했습니다.");
+            throw new BusinessException("가이드 키워드 검색 중 오류가 발생했습니다.", e);
         }
     }
 }
