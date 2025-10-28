@@ -35,6 +35,16 @@ public interface VoteRepository extends JpaRepository<Vote, UUID> {
     List<Vote> findByUserId(UUID userId);
 
     /**
+     * 특정 사용자가 생성한 투표 중 아직 종료되지 않은 투표 목록을 조회합니다.
+     *
+     * @param userId 사용자 ID
+     * @param currentDate 현재 날짜
+     * @return 사용자가 생성한 진행 중인 투표 목록
+     */
+    @Query("SELECT v FROM Vote v WHERE v.user.id = :userId AND v.finishedAt > :currentDate")
+    List<Vote> findActiveVotesByUserId(UUID userId, LocalDate currentDate);
+
+    /**
      * 종료 날짜가 지나지 않은 투표 목록을 조회합니다.
      *
      * @param currentDate 현재 날짜
