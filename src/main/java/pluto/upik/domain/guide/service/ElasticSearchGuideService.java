@@ -119,7 +119,7 @@ public class ElasticSearchGuideService {
                 searchQuery, GuideDocument.class, IndexCoordinates.of("guides"));
 
             if (searchHits.isEmpty()) {
-                log.warn("유사 제목 검색 결과 없음 - title: {}", title);
+                log.warn("유사 제목 검색 결과 없음 - title: {}, 대체 검색 시도", title);
 
                 // 더 관대한 검색 시도 (와일드카드)
                 NativeQuery fallbackQuery = new NativeQueryBuilder()
@@ -147,8 +147,9 @@ public class ElasticSearchGuideService {
                     fallbackQuery, GuideDocument.class, IndexCoordinates.of("guides"));
 
                 if (searchHits.isEmpty()) {
-                    throw new ResourceNotFoundException("유사한 제목의 가이드를 찾을 수 없습니다: " + title);
-}
+                    log.info("대체 검색도 결과 없음 - title: {}, 빈 리스트 반환", title);
+                    return List.of(); // 빈 배열 반환
+                }
             }
 
             List<GuideDocument> documents = searchHits.getSearchHits().stream()

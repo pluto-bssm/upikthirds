@@ -28,6 +28,8 @@ public class GuideQueryService implements GuideQueryServiceInterface {
 
     /**
      * {@inheritDoc}
+     *
+     * 카테고리에 해당하는 가이드가 없는 경우 빈 리스트를 반환합니다.
      */
     @Override
     public List<GuideResponse> findByCategory(String category) {
@@ -35,10 +37,10 @@ public class GuideQueryService implements GuideQueryServiceInterface {
 
         try {
             List<Guide> guides = guideRepository.findAllByCategory(category);
-            
+
             if (guides.isEmpty()) {
-                log.info("카테고리별 가이드 없음 - category: {}", category);
-                throw new ResourceNotFoundException("카테고리에 해당하는 가이드가 없습니다: " + category);
+                log.info("카테고리별 가이드 없음 - category: {}, 빈 리스트 반환", category);
+                return List.of(); // 빈 배열 반환
             }
 
             List<GuideResponse> responses = guides.stream()
@@ -47,11 +49,9 @@ public class GuideQueryService implements GuideQueryServiceInterface {
 
             log.debug("카테고리별 가이드 조회 완료 - category: {}, 결과 개수: {}", category, responses.size());
             return responses;
-        } catch (ResourceNotFoundException e) {
-            throw e;
         } catch (Exception e) {
             log.error("카테고리별 가이드 조회 중 오류 - category: {}, error: {}", category, e.getMessage(), e);
-            throw new BusinessException("가이드 조회 중 오류가 발생했습니다.");
+            throw new BusinessException("가이드 조회 중 오류가 발생했습니다.", e);
         }
     }
     
