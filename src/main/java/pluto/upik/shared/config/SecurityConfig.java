@@ -115,18 +115,7 @@ public class SecurityConfig {
 
     private UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:8080",
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://realupik-659794985248.asia-northeast3.run.app",
-                "http://10.129.57.38:3000",
-                "http://10.150.149.100:3000",
-                "http://10.129.57.46:3000",
-                "https://upikkkkk-taehyun00s-projects.vercel.app",
-                "https://upik-659794985248.asia-northeast3.run.app"
-
-        ));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("*");
