@@ -1,0 +1,21 @@
+# 욕설 검사 관련 스키마
+
+"""
+욕설 검사 응답
+"""
+type CheckBadWordResponse {
+    """
+    욕설 포함 여부
+    """
+    containsBadWord: Boolean!
+
+    """
+    응답 메시지
+    """
+    message: String!
+
+    """
+    검사한 텍스트
+    """
+    checkedText: String
+}

@@ -14,6 +14,7 @@ type Query {
     aiQuota: AIQuotaQuery
     board: BoardQuery
     search: SearchQuery
+    checkBadWord(text: String!): CheckBadWordResponse!
 }
 
 type Mutation {
