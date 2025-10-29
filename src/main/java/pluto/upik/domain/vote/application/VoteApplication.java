@@ -9,6 +9,8 @@ import pluto.upik.domain.vote.data.DTO.CreateVoteInput;
 import pluto.upik.domain.vote.data.DTO.VotePayload;
 import pluto.upik.domain.vote.data.model.Vote;
 import pluto.upik.domain.vote.repository.VoteRepository;
+import pluto.upik.shared.exception.BadWordException;
+import pluto.upik.shared.filter.BadWordFilterService;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 
@@ -24,6 +26,7 @@ public class VoteApplication {
     private final VoteRepository voteRepository;
     private final OptionRepository optionRepository;
     private final UserRepository userRepository;
+    private final BadWordFilterService badWordFilterService;
 
     /**
      * 새로운 투표를 생성합니다.
@@ -33,6 +36,17 @@ public class VoteApplication {
      */
     @Transactional
     public VotePayload createVote(CreateVoteInput input,UUID userId) {
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(input.getTitle())) {
+            throw BadWordException.Predefined.inTitle();
+        }
+        if (badWordFilterService.containsBadWord(input.getCategory())) {
+            throw BadWordException.Predefined.inCategory();
+        }
+        if (badWordFilterService.containsBadWordInList(input.getOptions())) {
+            throw BadWordException.Predefined.inOptions();
+        }
+
         // 현재는 테스트를 위해 첫 번째 사용자를 가져옴 (실제로는 인증된 사용자를 사용해야 함)
         User user = userRepository.findById(userId).orElseThrow();
 

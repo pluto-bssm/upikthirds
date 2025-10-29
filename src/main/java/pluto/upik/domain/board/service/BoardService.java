@@ -13,7 +13,9 @@ import pluto.upik.domain.board.data.model.Board;
 import pluto.upik.domain.board.data.model.Comment;
 import pluto.upik.domain.board.repository.BoardRepository;
 import pluto.upik.domain.board.repository.CommentRepository;
+import pluto.upik.shared.exception.BadWordException;
 import pluto.upik.shared.exception.BusinessException;
+import pluto.upik.shared.filter.BadWordFilterService;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 
@@ -30,7 +32,8 @@ public class BoardService implements BoardServiceInterface {
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository; // UserRepository 주입
+    private final UserRepository userRepository;
+    private final BadWordFilterService badWordFilterService;
 
     @Override
     @Transactional(readOnly = true)
@@ -82,6 +85,14 @@ public class BoardService implements BoardServiceInterface {
     @Override
     @Transactional
     public BoardResponse createQuestion(CreateBoardInput input, UUID userId) {
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(input.getTitle())) {
+            throw BadWordException.Predefined.inTitle();
+        }
+        if (badWordFilterService.containsBadWord(input.getContent())) {
+            throw BadWordException.Predefined.inContent();
+        }
+
         Board board = new Board();
         board.setId(UUID.randomUUID());
         board.setTitle(input.getTitle());
@@ -90,7 +101,7 @@ public class BoardService implements BoardServiceInterface {
         board.setViewCount(0);
         board.setCreatedAt(LocalDateTime.now());
         board.setUpdatedAt(LocalDateTime.now());
-        
+
         Board savedBoard = boardRepository.save(board);
         return mapBoardToBoardResponse(savedBoard);
     }
@@ -100,15 +111,23 @@ public class BoardService implements BoardServiceInterface {
     public BoardResponse updateQuestion(UUID boardId, UpdateBoardInput input, UUID userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 게시글입니다."));
-        
+
         if (!board.getUserId().equals(userId)) {
             throw new BusinessException("게시글 수정 권한이 없습니다.");
         }
-        
+
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(input.getTitle())) {
+            throw BadWordException.Predefined.inTitle();
+        }
+        if (badWordFilterService.containsBadWord(input.getContent())) {
+            throw BadWordException.Predefined.inContent();
+        }
+
         board.setTitle(input.getTitle());
         board.setContent(input.getContent());
         board.setUpdatedAt(LocalDateTime.now());
-        
+
         Board updatedBoard = boardRepository.save(board);
         return mapBoardToBoardResponse(updatedBoard);
     }
@@ -133,16 +152,21 @@ public class BoardService implements BoardServiceInterface {
     @Override
     @Transactional
     public CommentResponse createComment(CreateCommentInput input, UUID userId) {
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(input.getContent())) {
+            throw BadWordException.Predefined.inComment();
+        }
+
         // 게시글 존재 여부 확인
         boardRepository.findById(input.getBoardId())
                 .orElseThrow(() -> new BusinessException("존재하지 않는 게시글입니다."));
-        
+
         // 부모 댓글이 있는 경우 존재 여부 확인
         if (input.getParentId() != null) {
             commentRepository.findById(input.getParentId())
                     .orElseThrow(() -> new BusinessException("존재하지 않는 댓글입니다."));
         }
-        
+
         Comment comment = new Comment();
         comment.setId(UUID.randomUUID());
         comment.setContent(input.getContent());
@@ -151,7 +175,7 @@ public class BoardService implements BoardServiceInterface {
         comment.setParentId(input.getParentId());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
-        
+
         Comment savedComment = commentRepository.save(comment);
         return mapCommentToCommentResponse(savedComment);
     }

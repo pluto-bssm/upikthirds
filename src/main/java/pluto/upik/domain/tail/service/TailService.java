@@ -10,6 +10,8 @@ import pluto.upik.domain.tail.data.model.Tail;
 import pluto.upik.domain.tail.data.model.TailResponse;
 import pluto.upik.domain.tail.repository.TailRepository;
 import pluto.upik.domain.tail.repository.TailResponseRepository;
+import pluto.upik.shared.exception.BadWordException;
+import pluto.upik.shared.filter.BadWordFilterService;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 import pluto.upik.domain.vote.data.model.Vote;
@@ -30,6 +32,7 @@ public class TailService {
     private final TailResponseRepository tailResponseRepository;
     private final VoteRepository voteRepository;
     private final UserRepository userRepository;
+    private final BadWordFilterService badWordFilterService;
 
     /**
      * 테일 생성
@@ -40,6 +43,12 @@ public class TailService {
      */
     public TailPayload createTail(String voteIdStr, String question) {
         log.debug("테일 생성 서비스 시작: voteId={}, question={}", voteIdStr, question);
+
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(question)) {
+            throw BadWordException.Predefined.inQuestion();
+        }
+
         // voteId가 null이 아닌지 확인
         if (voteIdStr == null) {
             throw new IllegalArgumentException("투표 ID는 null일 수 없습니다.");
@@ -81,6 +90,11 @@ public class TailService {
      */
     public TailResponsePayload createTailResponse(String tailIdStr, UUID userId, String answer) {
         log.debug("테일 응답 생성 서비스 시작: tailId={}, userId={}, answer={}", tailIdStr, userId, answer);
+
+        // 욕설 검증
+        if (badWordFilterService.containsBadWord(answer)) {
+            throw BadWordException.Predefined.inContent();
+        }
 
         // tailId와 userId가 null이 아닌지 확인
         if (tailIdStr == null) {
