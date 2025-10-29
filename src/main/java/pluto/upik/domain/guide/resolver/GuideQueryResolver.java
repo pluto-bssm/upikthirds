@@ -2,9 +2,11 @@ package pluto.upik.domain.guide.resolver;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import pluto.upik.domain.guide.data.DTO.GuideDetailResponse;
+import pluto.upik.domain.guide.data.DTO.GuideQuery;
 import pluto.upik.domain.guide.data.DTO.GuidePage;
 import pluto.upik.domain.guide.service.GuideQueryServiceInterface;
 import java.util.UUID;
@@ -13,7 +15,7 @@ import java.util.UUID;
  * 가이드 관련 GraphQL 쿼리 리졸버
  */
 @Slf4j
-@Component
+@Controller
 @RequiredArgsConstructor
 public class GuideQueryResolver {
 
@@ -24,8 +26,8 @@ public class GuideQueryResolver {
      * @param id 조회할 가이드의 ID
      * @return 가이드 상세 정보를 담은 GuideDetailResponse
      */
-    @SchemaMapping
-    public GuideDetailResponse guideById(String id) {
+    @SchemaMapping(typeName = "GuideQuery", field = "guideById")
+    public GuideDetailResponse guideById(@Argument String id) {
         log.info("guideById 쿼리 요청 - id: {}", id);
         try {
             UUID guideId = UUID.fromString(id);
@@ -44,8 +46,8 @@ public class GuideQueryResolver {
      * @param sortBy 정렬 기준 ("date" 또는 "bookmark")
      * @return 페이징된 가이드 정보
      */
-    @SchemaMapping
-    public GuidePage getAllGuides(int page, int size, String sortBy) {
+    @SchemaMapping(typeName = "GuideQuery", field = "getAllGuides")
+    public GuidePage getAllGuides(@Argument int page, @Argument int size, @Argument String sortBy) {
         log.info("getAllGuides 쿼리 요청 - page: {}, size: {}, sortBy: {}", page, size, sortBy);
         return guideQueryService.getAllGuides(page, size, sortBy);
     }

@@ -15,6 +15,7 @@ import pluto.upik.domain.guide.repository.GuideRepository;
 import pluto.upik.shared.exception.BusinessException;
 import pluto.upik.shared.exception.ResourceNotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -119,20 +120,33 @@ public class GuideQueryService implements GuideQueryServiceInterface {
         log.info("모든 가이드 조회 요청 - page: {}, size: {}, sortBy: {}", page, size, sortBy);
 
         try {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Guide> guidesPage;
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Guide> guidesPage;
 
-        if ("bookmark".equalsIgnoreCase(sortBy)) {
-            // 북마크 수 기준 정렬
-            guidesPage = guideRepository.findAllOrderByBookmarkCount(pageable);
-        } else {
-            // 기본: 생성일 기준 정렬 (최신순)
-            guidesPage = guideRepository.findAllByOrderByCreatedAtDesc(pageable);
-}
+            if ("bookmark".equalsIgnoreCase(sortBy)) {
+                // 북마크 수 기준 정렬
+                guidesPage = guideRepository.findAllOrderByBookmarkCount(pageable);
+            } else {
+                // 기본: 생성일 기준 정렬 (최신순)
+                guidesPage = guideRepository.findAllByOrderByCreatedAtDesc(pageable);
+            }
+
+            // null 체크 추가
+            if (guidesPage == null) {
+                log.warn("Repository returned null for page: {}, size: {}, sortBy: {}", page, size, sortBy);
+                return GuidePage.builder()
+                        .content(Collections.emptyList())
+                        .totalElements(0L)
+                        .totalPages(0)
+                        .pageNumber(page)
+                        .size(size)
+                        .hasNext(false)
+                        .build();
+            }
 
             List<GuideResponse> content = guidesPage.getContent().stream()
-                .map(this::mapToGuideResponse)
-                .collect(Collectors.toList());
+                    .map(this::mapToGuideResponse)
+                    .collect(Collectors.toList());
 
             GuidePage result = GuidePage.builder()
                     .content(content)
@@ -141,16 +155,16 @@ public class GuideQueryService implements GuideQueryServiceInterface {
                     .pageNumber(guidesPage.getNumber())
                     .size(guidesPage.getSize())
                     .hasNext(guidesPage.hasNext())
-                .build();
+                    .build();
 
-            log.info("모든 가이드 조회 완료 - 총 가이드 수: {}, 총 페이지 수: {}",
-                    result.getTotalElements(), result.getTotalPages());
+            log.info("모든 가이드 조회 완료 - 총 가이드 수: {}, 총 페이지 수: {}, 현재 페이지: {}",
+                    result.getTotalElements(), result.getTotalPages(), result.getPageNumber());
             return result;
         } catch (Exception e) {
             log.error("가이드 목록 조회 중 예외 발생 - error: {}", e.getMessage(), e);
             throw new BusinessException("가이드 목록 조회 중 오류가 발생했습니다.");
-}
-}
+        }
+    }
 
     /**
      * Guide 엔티티를 GuideResponse DTO로 변환합니다.
