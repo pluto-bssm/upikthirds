@@ -26,6 +26,10 @@ public class VotePayload {
     private List<OptionWithStatsPayload> options;
     private boolean hasVoted; // 사용자가 투표에 참여했는지 여부
 
+    public boolean getHasVoted() {
+        return this.hasVoted;
+    }
+
     /**
      * Vote 엔티티와 옵션 목록을 기반으로 옵션 통계 없이 VotePayload 객체를 생성합니다.
      *
