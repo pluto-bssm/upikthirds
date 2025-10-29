@@ -3,14 +3,10 @@ package pluto.upik.domain.vote.resolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import pluto.upik.domain.vote.data.DTO.VoteDetailPayload;
 import pluto.upik.domain.vote.data.DTO.VotePayload;
 import pluto.upik.domain.vote.service.VoteServiceUpdated;
-import pluto.upik.shared.oauth2jwt.annotation.RequireAuth;
-import pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User;
-import pluto.upik.shared.oauth2jwt.service.UserService;
 import pluto.upik.shared.oauth2jwt.util.SecurityUtil;
 
 import java.util.List;
@@ -26,29 +22,33 @@ public class VoteQueryResolverUpdated {
     /**
      * 모든 투표 목록을 반환합니다.
      *
-     * 현재 사용자 ID를 사용하여 해당 사용자의 모든 투표 정보를 조회합니다.
+     * 인증된 사용자의 경우 hasVoted가 정확히 표시되며,
+     * 인증되지 않은 사용자의 경우 hasVoted는 false로 표시됩니다.
      *
      * @param includeExpired 종료된 투표 포함 여부 (기본값: true)
+     * @param includeHasVoted 사용자가 투표한 항목 필터링 여부 (기본값: false)
      * @return 모든 투표의 리스트
      */
-    @RequireAuth
     @SchemaMapping(typeName = "VoteQuery", field = "getAllVotes")
-    public List<VotePayload> getAllVotes(@Argument(name = "includeExpired") Boolean includeExpired) {
-        UUID userId = securityUtil.getCurrentUserId();
+    public List<VotePayload> getAllVotes(@Argument(name = "includeExpired") Boolean includeExpired, @Argument(name = "includeHasVoted") Boolean includeHasVoted) {
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         boolean include = (includeExpired != null) ? includeExpired : true;
-        return voteService.getAllVotes(userId, include);
+        boolean filterHasVoted = (includeHasVoted != null) ? includeHasVoted : false;
+        return voteService.getAllVotes(userId, include, filterHasVoted);
     }
 
     /**
      * 주어진 투표 ID에 해당하는 투표의 상세 정보를 반환합니다.
+     *
+     * 인증된 사용자의 경우 hasVoted가 정확히 표시되며,
+     * 인증되지 않은 사용자의 경우 hasVoted는 false로 표시됩니다.
      *
      * @param id 조회할 투표의 UUID 문자열
      * @return 해당 투표의 상세 정보 페이로드
      */
     @SchemaMapping(typeName = "VoteQuery", field = "getVoteById")
     public VoteDetailPayload getVoteById(@Argument String id) {
-        UUID userId = securityUtil.getCurrentUserId();
-        System.out.println("userId = " + userId);
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         return voteService.getVoteById(UUID.fromString(id), userId);
     }
 
@@ -56,12 +56,15 @@ public class VoteQueryResolverUpdated {
      * 가장 인기 있는 투표 3개를 반환합니다.
      *
      * @param includeExpired 종료된 투표 포함 여부 (기본값: false)
+     * @param includeHasVoted 사용자가 투표한 항목 필터링 여부 (기본값: false)
      * @return 인기 순으로 정렬된 상위 3개의 투표 목록
      */
     @SchemaMapping(typeName = "VoteQuery", field = "getMostPopularOpenVote")
-    public List<VotePayload> getMostPopularOpenVote(@Argument(name = "includeExpired") Boolean includeExpired) {
+    public List<VotePayload> getMostPopularOpenVote(@Argument(name = "includeExpired") Boolean includeExpired, @Argument(name = "includeHasVoted") Boolean includeHasVoted) {
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         boolean include = (includeExpired != null) ? includeExpired : false;
-        return voteService.getMostPopularOpenVote(include);
+        boolean filterHasVoted = (includeHasVoted != null) ? includeHasVoted : false;
+        return voteService.getMostPopularOpenVote(userId, include, filterHasVoted);
     }
 
     /**
@@ -70,24 +73,29 @@ public class VoteQueryResolverUpdated {
      * 서비스 계층에서 항상 투표하지 않은 상태로 표시됩니다.
      *
      * @param includeExpired 종료된 투표 포함 여부 (기본값: false)
+     * @param includeHasVoted 사용자가 투표한 항목 필터링 여부 (기본값: false)
      * @return 인기가 가장 낮은 투표의 정보
      */
     @SchemaMapping(typeName = "VoteQuery", field = "getLeastPopularOpenVote")
-    public VotePayload getLeastPopularOpenVote(@Argument(name = "includeExpired") Boolean includeExpired) {
+    public VotePayload getLeastPopularOpenVote(@Argument(name = "includeExpired") Boolean includeExpired, @Argument(name = "includeHasVoted") Boolean includeHasVoted) {
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         boolean include = (includeExpired != null) ? includeExpired : false;
-        return voteService.getLeastPopularOpenVote(include);
+        boolean filterHasVoted = (includeHasVoted != null) ? includeHasVoted : false;
+        return voteService.getLeastPopularOpenVote(userId, include, filterHasVoted);
     }
 
     /**
      * 현재 사용자가 생성한 투표 목록을 반환합니다.
      *
      * @param includeExpired 종료된 투표 포함 여부 (기본값: true)
+     * @param includeHasVoted 사용자가 투표한 항목 필터링 여부 (기본값: false)
      * @return 사용자가 생성한 투표의 목록
      */
     @SchemaMapping(typeName = "VoteQuery", field = "getMyVotes")
-    public List<VotePayload> getMyVotes(@Argument(name = "includeExpired") Boolean includeExpired) {
+    public List<VotePayload> getMyVotes(@Argument(name = "includeExpired") Boolean includeExpired, @Argument(name = "includeHasVoted") Boolean includeHasVoted) {
         UUID userId = securityUtil.getCurrentUserId();
         boolean include = (includeExpired != null) ? includeExpired : true;
-        return voteService.getMyVotes(userId, include);
+        boolean filterHasVoted = (includeHasVoted != null) ? includeHasVoted : false;
+        return voteService.getMyVotes(userId, include, filterHasVoted);
     }
 }
