@@ -40,11 +40,28 @@ public class BoardService implements BoardServiceInterface {
     public BoardPage getQuestionList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Board> boardPage = boardRepository.findAll(pageable);
-        
+
         List<BoardResponse> boardResponses = boardPage.getContent().stream()
                 .map(this::mapBoardToBoardResponse)
                 .collect(Collectors.toList());
-        
+
+        return BoardPage.builder()
+                .content(boardResponses)
+                .totalPages(boardPage.getTotalPages())
+                .totalElements(boardPage.getTotalElements())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BoardPage getMyQuestions(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Board> boardPage = boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+
+        List<BoardResponse> boardResponses = boardPage.getContent().stream()
+                .map(this::mapBoardToBoardResponse)
+                .collect(Collectors.toList());
+
         return BoardPage.builder()
                 .content(boardResponses)
                 .totalPages(boardPage.getTotalPages())

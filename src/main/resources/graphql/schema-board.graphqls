@@ -71,6 +71,9 @@ type BoardQuery {
 
   # 댓글 리스트 조회
   getComments(boardId: ID!, page: Int!, size: Int!): CommentPage!
+
+  # 내가 작성한 질문 리스트 조회
+  getMyQuestions(page: Int!, size: Int!): BoardPage!
 }
 
 type BoardMutation {

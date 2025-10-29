@@ -10,6 +10,7 @@ import pluto.upik.domain.board.data.DTO.BoardQuery;
 import pluto.upik.domain.board.data.DTO.BoardResponse;
 import pluto.upik.domain.board.data.DTO.CommentPage;
 import pluto.upik.domain.board.service.BoardServiceInterface;
+import pluto.upik.shared.oauth2jwt.util.SecurityUtil;
 
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class BoardQueryResolver {
 
     private final BoardServiceInterface boardService;
+    private final SecurityUtil securityUtil;
 
     @SchemaMapping(typeName = "BoardQuery", field = "getQuestionList")
     public BoardPage getQuestionList(BoardQuery parent, @Argument int page, @Argument int size) {
@@ -59,6 +61,17 @@ public class BoardQueryResolver {
         } catch (Exception e) {
             log.error("댓글 목록 조회 중 오류 발생: boardId={}", boardId, e);
             throw new RuntimeException("댓글 목록을 조회하는 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    @SchemaMapping(typeName = "BoardQuery", field = "getMyQuestions")
+    public BoardPage getMyQuestions(BoardQuery parent, @Argument int page, @Argument int size) {
+        try {
+            UUID currentUserId = securityUtil.getCurrentUserId();
+            return boardService.getMyQuestions(currentUserId, page, size);
+        } catch (Exception e) {
+            log.error("내가 작성한 질문 목록 조회 중 오류 발생", e);
+            throw new RuntimeException("내가 작성한 질문 목록을 조회하는 중 오류가 발생했습니다.", e);
         }
     }
 }
