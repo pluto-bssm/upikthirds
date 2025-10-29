@@ -119,6 +119,7 @@ public interface GuideRepository extends JpaRepository<Guide, UUID> {
     
     /**
      * 북마크 수 기준으로 정렬된 가이드 목록을 페이지네이션하여 조회합니다.
+     * MariaDB에서는 NULLS LAST 대신 IFNULL을 사용하여 NULL 값을 마지막으로 정렬합니다.
      *
      * @param pageable 페이지 정보
      * @return 정렬된 가이드 페이지
@@ -126,7 +127,8 @@ public interface GuideRepository extends JpaRepository<Guide, UUID> {
     @Query(value = "SELECT g.* FROM guide g " +
            "LEFT JOIN (SELECT guide_id, COUNT(*) as bookmark_count FROM bookmark GROUP BY guide_id) b " +
            "ON g.id = b.guide_id " +
-           "ORDER BY b.bookmark_count DESC NULLS LAST", 
+           "ORDER BY IFNULL(b.bookmark_count, 0) DESC",
+           countQuery = "SELECT COUNT(*) FROM guide",
            nativeQuery = true)
     Page<Guide> findAllOrderByBookmarkCount(Pageable pageable);
 }

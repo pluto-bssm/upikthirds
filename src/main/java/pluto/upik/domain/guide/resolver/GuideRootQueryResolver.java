@@ -3,6 +3,7 @@ package pluto.upik.domain.guide.resolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import pluto.upik.domain.guide.data.DTO.GuideQuery;
 
 /**
  * 가이드 관련 GraphQL 루트 쿼리 리졸버
@@ -18,8 +19,8 @@ public class GuideRootQueryResolver {
      * @return 가이드 쿼리 객체
      */
     @QueryMapping
-    public Object guide() {
-        log.debug("GraphQL 가이드 쿼리 루트 진입점 호출");
-        return new Object(); // 또는 GuideQuery 인스턴스. POJO면 아무거나 가능
+    public GuideQuery guide() {
+        log.info("GraphQL 가이드 쿼리 루트 진입점 호출");
+        return new GuideQuery();
     }
 }
