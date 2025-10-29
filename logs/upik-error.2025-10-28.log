@@ -1,9 +1,52 @@
-2025-09-02 08:48:54.759 [http-nio-8080-exec-4] ERROR o.s.g.e.ExceptionResolversExceptionHandler - Unresolved IllegalStateException for executionId 17f75d60-fcff-bd93-1b6f-552d18854738
-java.lang.IllegalStateException: Parameter [1] in public java.util.List<pluto.upik.domain.notification.data.DTO.NotificationResponse> pluto.upik.domain.notification.resolver.NotificationQueryResolver.getNotifications(pluto.upik.domain.notification.data.DTO.NotificationQuery,pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User): does not match the source Object type 'class pluto.upik.domain.notification.data.DTO.NotificationQuery'.
-	at org.springframework.graphql.data.method.annotation.support.SourceMethodArgumentResolver.resolveArgument(SourceMethodArgumentResolver.java:75)
-	at org.springframework.graphql.data.method.HandlerMethodArgumentResolverComposite.resolveArgument(HandlerMethodArgumentResolverComposite.java:83)
-	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethodSupport.getMethodArgumentValues(DataFetcherHandlerMethodSupport.java:92)
-	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:118)
+2025-09-25 18:59:23.137 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in pluto.upik.domain.revote.resolver.RevoteMutationResolver required a bean of type 'pluto.upik.domain.revote.service.RevoteServiceInterface' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'pluto.upik.domain.revote.service.RevoteServiceInterface' in your configuration.
+
+2025-10-28 20:08:39.883 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2025-10-28 20:09:00.126 [http-nio-8080-exec-6] ERROR o.s.g.e.ExceptionResolversExceptionHandler - Unresolved ClassCastException for executionId a8858f19-8f37-1ed8-010d-99a59f22e3f0
+java.lang.ClassCastException: class java.lang.String cannot be cast to class pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User (java.lang.String is in module java.base of loader 'bootstrap'; pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User is in unnamed module of loader 'app')
+	at pluto.upik.shared.oauth2jwt.service.UserService.getCurrentUser(UserService.java:18)
+	at pluto.upik.shared.oauth2jwt.service.UserService.isAuthenticated(UserService.java:28)
+	at pluto.upik.shared.oauth2jwt.aspect.AuthorizationAspect.checkAuthentication(AuthorizationAspect.java:27)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:642)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:632)
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:71)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:173)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at pluto.upik.domain.vote.resolver.VoteQueryResolverUpdated$$SpringCGLIB$$0.getAllVotes(<generated>)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
+	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.validateAndInvoke(DataFetcherHandlerMethod.java:142)
+	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:125)
 	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:103)
 	at org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer$SchemaMappingDataFetcher.get(AnnotatedControllerConfigurer.java:521)
 	at org.springframework.graphql.execution.ContextDataFetcherDecorator.lambda$get$0(ContextDataFetcherDecorator.java:92)
@@ -56,7 +99,7 @@ java.lang.IllegalStateException: Parameter [1] in public java.util.List<pluto.up
 	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:65)
+	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:64)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
@@ -78,7 +121,7 @@ java.lang.IllegalStateException: Parameter [1] in public java.util.List<pluto.up
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
 	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:65)
+	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:64)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
 	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:235)
@@ -150,12 +193,26 @@ java.lang.IllegalStateException: Parameter [1] in public java.util.List<pluto.up
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
-2025-09-02 08:52:02.825 [http-nio-8080-exec-2] ERROR o.s.g.e.ExceptionResolversExceptionHandler - Unresolved IllegalStateException for executionId 743b6ded-30d6-1c8e-5637-4751587229fc
-java.lang.IllegalStateException: Parameter [1] in public boolean pluto.upik.domain.aiquota.resolver.AIQuotaQueryResolver.canUseAI(pluto.upik.domain.aiquota.data.DTO.AIQuotaQuery,pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User): does not match the source Object type 'class pluto.upik.domain.aiquota.data.DTO.AIQuotaQuery'.
-	at org.springframework.graphql.data.method.annotation.support.SourceMethodArgumentResolver.resolveArgument(SourceMethodArgumentResolver.java:75)
-	at org.springframework.graphql.data.method.HandlerMethodArgumentResolverComposite.resolveArgument(HandlerMethodArgumentResolverComposite.java:83)
-	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethodSupport.getMethodArgumentValues(DataFetcherHandlerMethodSupport.java:92)
-	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:118)
+2025-10-28 20:10:09.806 [http-nio-8080-exec-2] ERROR o.s.g.e.ExceptionResolversExceptionHandler - Unresolved ClassCastException for executionId 258e63d5-70cd-5b16-8662-d059baee1872
+java.lang.ClassCastException: class java.lang.String cannot be cast to class pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User (java.lang.String is in module java.base of loader 'bootstrap'; pluto.upik.shared.oauth2jwt.dto.CustomOAuth2User is in unnamed module of loader 'app')
+	at pluto.upik.shared.oauth2jwt.service.UserService.getCurrentUser(UserService.java:18)
+	at pluto.upik.shared.oauth2jwt.service.UserService.isAuthenticated(UserService.java:28)
+	at pluto.upik.shared.oauth2jwt.aspect.AuthorizationAspect.checkAuthentication(AuthorizationAspect.java:27)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:642)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:632)
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:71)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:173)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at pluto.upik.domain.vote.resolver.VoteQueryResolverUpdated$$SpringCGLIB$$0.getAllVotes(<generated>)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.graphql.data.method.InvocableHandlerMethodSupport.doInvoke(InvocableHandlerMethodSupport.java:117)
+	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.validateAndInvoke(DataFetcherHandlerMethod.java:142)
+	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:125)
 	at org.springframework.graphql.data.method.annotation.support.DataFetcherHandlerMethod.invoke(DataFetcherHandlerMethod.java:103)
 	at org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer$SchemaMappingDataFetcher.get(AnnotatedControllerConfigurer.java:521)
 	at org.springframework.graphql.execution.ContextDataFetcherDecorator.lambda$get$0(ContextDataFetcherDecorator.java:92)
@@ -208,7 +265,7 @@ java.lang.IllegalStateException: Parameter [1] in public boolean pluto.upik.doma
 	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
-	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:65)
+	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:64)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
@@ -230,7 +287,7 @@ java.lang.IllegalStateException: Parameter [1] in public boolean pluto.upik.doma
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
 	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
-	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:65)
+	at pluto.upik.shared.oauth2jwt.jwt.JWTFilter.doFilterInternal(JWTFilter.java:64)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
 	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
 	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:235)
