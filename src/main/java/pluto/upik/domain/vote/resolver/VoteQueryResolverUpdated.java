@@ -26,15 +26,15 @@ public class VoteQueryResolverUpdated {
     /**
      * 모든 투표 목록을 반환합니다.
      *
-     * 현재 사용자 ID를 사용하여 해당 사용자의 모든 투표 정보를 조회합니다.
+     * 인증된 사용자의 경우 hasVoted가 정확히 표시되며,
+     * 인증되지 않은 사용자의 경우 hasVoted는 false로 표시됩니다.
      *
      * @param includeExpired 종료된 투표 포함 여부 (기본값: true)
      * @return 모든 투표의 리스트
      */
-    @RequireAuth
     @SchemaMapping(typeName = "VoteQuery", field = "getAllVotes")
     public List<VotePayload> getAllVotes(@Argument(name = "includeExpired") Boolean includeExpired) {
-        UUID userId = securityUtil.getCurrentUserId();
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         boolean include = (includeExpired != null) ? includeExpired : true;
         return voteService.getAllVotes(userId, include);
     }
@@ -42,13 +42,15 @@ public class VoteQueryResolverUpdated {
     /**
      * 주어진 투표 ID에 해당하는 투표의 상세 정보를 반환합니다.
      *
+     * 인증된 사용자의 경우 hasVoted가 정확히 표시되며,
+     * 인증되지 않은 사용자의 경우 hasVoted는 false로 표시됩니다.
+     *
      * @param id 조회할 투표의 UUID 문자열
      * @return 해당 투표의 상세 정보 페이로드
      */
     @SchemaMapping(typeName = "VoteQuery", field = "getVoteById")
     public VoteDetailPayload getVoteById(@Argument String id) {
-        UUID userId = securityUtil.getCurrentUserId();
-        System.out.println("userId = " + userId);
+        UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
         return voteService.getVoteById(UUID.fromString(id), userId);
     }
 

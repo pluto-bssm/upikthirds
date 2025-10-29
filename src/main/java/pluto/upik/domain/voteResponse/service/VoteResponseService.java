@@ -30,8 +30,20 @@ public class VoteResponseService {
     private final OptionRepository optionRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 사용자가 특정 투표에 참여했는지 확인합니다.
+     *
+     * userId가 null인 경우 (인증되지 않은 사용자) false를 반환합니다.
+     *
+     * @param userId 확인할 사용자 ID (null 가능)
+     * @param voteId 투표 ID
+     * @return 사용자가 투표에 참여했으면 true, 아니면 false
+     */
     @Transactional(readOnly = true)
     public boolean hasUserVoted(UUID userId, UUID voteId) {
+        if (userId == null) {
+            return false;
+        }
         return voteResponseRepository.findByUserIdAndVoteId(userId, voteId).isPresent();
     }
 
