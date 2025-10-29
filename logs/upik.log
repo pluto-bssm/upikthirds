@@ -1247,3 +1247,10 @@ pluto.upik.shared.exception.BadWordException: 제목에 부적절한 언어가 �
 2025-10-29 14:52:26.322 [http-nio-8080-exec-6] WARN  p.u.s.f.r.BadWordQueryResolver - 욕설 감지: text=씨발 진짜 짜증나네
 2025-10-29 14:52:29.294 [http-nio-8080-exec-7] WARN  p.u.s.filter.BadWordFilterService - Bad word detected: 씨발 in text: 씨발 진짜 짜증나네
 2025-10-29 14:52:29.294 [http-nio-8080-exec-7] WARN  p.u.s.f.r.BadWordQueryResolver - 욕설 감지: text=씨발 진짜 짜증나네
+2025-10-29 14:53:04.976 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-29 14:53:05.033 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-29 14:53:05.128 [SpringApplicationShutdownHook] INFO  p.upik.shared.ai.service.AIService - AIService 종료 중...
+2025-10-29 14:53:05.128 [SpringApplicationShutdownHook] INFO  p.upik.shared.ai.service.AIService - AIService 종료 완료
+2025-10-29 14:53:05.135 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-29 14:53:05.142 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-29 14:53:05.226 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
