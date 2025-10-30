@@ -35,6 +35,7 @@ public class Notification {
     @Column(columnDefinition = "BINARY(16)")
     private UUID referenceId; // 참조하는 엔티티의 ID (투표, 가이드, 질문 등)
 
+    @Column(name = "`read`")
     private boolean read;
 
     @CreatedDate

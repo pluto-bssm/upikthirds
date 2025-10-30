@@ -29,6 +29,7 @@ public class VoteResponseService {
     private final VoteRepository voteRepository;
     private final OptionRepository optionRepository;
     private final UserRepository userRepository;
+    private final pluto.upik.domain.vote.service.VoteClosureService voteClosureService;
 
     /**
      * 사용자가 특정 투표에 참여했는지 확인합니다.
@@ -100,7 +101,13 @@ public class VoteResponseService {
 
         VoteResponse savedVoteResponse = voteResponseRepository.save(voteResponse);
 
-        // 8. 응답 반환
+        // 8. 참여자 수 기준 종료 조건 실시간 체크
+        boolean wasClosed = voteClosureService.checkAndCloseVoteByParticipantCount(input.getVoteId());
+        if (wasClosed) {
+            log.info("투표 응답 저장 후 참여자 수 기준으로 투표 자동 종료: voteId={}", input.getVoteId());
+        }
+
+        // 9. 응답 반환
         return VoteResponsePayload.fromEntity(savedVoteResponse);
     }
 

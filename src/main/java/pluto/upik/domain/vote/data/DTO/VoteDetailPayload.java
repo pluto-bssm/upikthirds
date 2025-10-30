@@ -19,6 +19,8 @@ public class VoteDetailPayload {
     private String status;
     private String createdBy;
     private String finishedAt;
+    private String closureType; // 투표 종료 타입
+    private Integer participantThreshold; // 참여자 수 기준
     private int totalResponses;
     private List<OptionWithStatsPayload> options;
     private boolean hasVoted; // 사용자가 투표에 참여했는지 여부

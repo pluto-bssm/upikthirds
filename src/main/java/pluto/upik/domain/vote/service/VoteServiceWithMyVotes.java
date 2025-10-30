@@ -194,6 +194,8 @@ public class VoteServiceWithMyVotes {
                 .status(vote.getStatus().name())
                 .createdBy(creatorName)
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .closureType(vote.getClosureType() != null ? vote.getClosureType().name() : Vote.ClosureType.DEFAULT.name())
+                .participantThreshold(vote.getParticipantThreshold())
                 .totalResponses(totalResponses.intValue())
                 .options(optionStats)
                 .hasVoted(hasVoted)

@@ -80,6 +80,13 @@ public class Vote {
     }
 
     /**
+     * 투표 종료 타입
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum ('DEFAULT', 'CUSTOM_DAYS', 'PARTICIPANT_COUNT')")
+    private ClosureType closureType;
+
+    /**
      * 참여자 수 기준 종료 조건
      * 이 수 이상의 참여자가 투표하면 자동으로 종료됩니다.
      */
@@ -87,8 +94,17 @@ public class Vote {
     private Integer participantThreshold;
 
     /**
+     * 투표 종료 타입을 설정합니다.
+     *
+     * @param closureType 설정할 종료 타입
+     */
+    public void setClosureType(ClosureType closureType) {
+        this.closureType = closureType;
+    }
+
+    /**
      * 참여자 수 기준 종료 조건을 설정합니다.
-     * 
+     *
      * @param participantThreshold 설정할 참여자 수 기준
      */
     public void setParticipantThreshold(Integer participantThreshold) {
@@ -107,6 +123,15 @@ public class Vote {
      */
     public enum Status {
         OPEN, CLOSED
+    }
+
+    /**
+     * 투표 종료 타입 열거형
+     */
+    public enum ClosureType {
+        DEFAULT,           // 기본 7일
+        CUSTOM_DAYS,       // 특정 일수 후 종료
+        PARTICIPANT_COUNT  // 참여자 수 기준 종료
     }
 
     /**
