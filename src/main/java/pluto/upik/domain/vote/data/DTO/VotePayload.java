@@ -22,6 +22,8 @@ public class VotePayload {
     private String category;
     private String finishedAt;
     private String status;
+    private String closureType; // 투표 종료 타입
+    private Integer participantThreshold; // 참여자 수 기준 (PARTICIPANT_COUNT 타입일 때만)
     private int totalResponses;
     private List<OptionWithStatsPayload> options;
     private boolean hasVoted; // 사용자가 투표에 참여했는지 여부
@@ -46,6 +48,8 @@ public class VotePayload {
                 .category(vote.getCategory())
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .status(vote.getStatus().name())
+                .closureType(vote.getClosureType() != null ? vote.getClosureType().name() : Vote.ClosureType.DEFAULT.name())
+                .participantThreshold(vote.getParticipantThreshold())
                 .totalResponses(0) // 기본값
                 .options(options.stream()
                         .map(option -> new OptionWithStatsPayload(option.getId(), option.getContent(), 0, 0))
@@ -89,6 +93,8 @@ public class VotePayload {
                 .category(vote.getCategory())
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .status(vote.getStatus().name())
+                .closureType(vote.getClosureType() != null ? vote.getClosureType().name() : Vote.ClosureType.DEFAULT.name())
+                .participantThreshold(vote.getParticipantThreshold())
                 .totalResponses(totalResponses)
                 .options(optionStats)
                 .hasVoted(hasVoted)
