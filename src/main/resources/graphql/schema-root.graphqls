@@ -15,6 +15,7 @@ type Query {
     board: BoardQuery
     search: SearchQuery
     checkBadWord(text: String!): CheckBadWordResponse!
+    inquiry: InquiryQuery
 }
 
 type Mutation {
@@ -28,4 +29,5 @@ type Mutation {
     revote: RevoteMutation
     aiQuota: AIQuotaMutation
     board: BoardMutation
+    inquiry: InquiryMutation
 }
