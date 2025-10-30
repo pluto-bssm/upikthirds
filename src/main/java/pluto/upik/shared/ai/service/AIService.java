@@ -23,7 +23,9 @@ import pluto.upik.shared.exception.ResourceNotFoundException;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -40,6 +42,7 @@ public class AIService implements DisposableBean {
     private final TailResponseRepository tailResponseRepository;
     private final ChatAiService chatAiService;
     private final GuideRepository guideRepository;
+    private final AsyncAIHelper asyncAIHelper;
 
     // 현재 진행 중인 AI 요청을 추적하기 위한 맵 (요청 ID -> 취소 플래그)
     private final Map<String, AtomicBoolean> activeRequests = new ConcurrentHashMap<>();
