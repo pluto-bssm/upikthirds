@@ -74,6 +74,9 @@ dependencies {
 
     // Google Cloud Translate
     implementation 'com.google.cloud:google-cloud-translate:2.3.0'
+
+    // Spring Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

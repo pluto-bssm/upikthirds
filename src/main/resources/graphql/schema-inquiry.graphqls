@@ -1,0 +1,48 @@
+type InquiryQuery {
+    # 문의 유형 목록 조회
+    getInquiryTypes: [String!]!
+
+    # 서비스 상태 확인
+    inquiryServiceHealth: ServiceHealth!
+}
+
+type InquiryMutation {
+    # 문의 이메일 발송
+    sendInquiry(input: InquiryInput!): InquiryResponse!
+}
+
+# 문의 입력 타입
+input InquiryInput {
+    # 문의 유형 (필수)
+    inquiryType: String!
+
+    # 상세 내용 (필수)
+    content: String!
+
+    # 답변 받을 이메일 주소 (필수)
+    replyEmail: String!
+
+    # 문의자 이름 (선택)
+    senderName: String
+}
+
+# 문의 응답 타입
+type InquiryResponse {
+    # 성공 여부
+    success: Boolean!
+
+    # 응답 메시지
+    message: String!
+
+    # 에러 정보 (실패 시)
+    error: String
+}
+
+# 서비스 상태 타입
+type ServiceHealth {
+    # 상태 (UP, DOWN)
+    status: String!
+
+    # 서비스 이름
+    service: String!
+}
