@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import pluto.upik.domain.board.data.DTO.BoardPage;
 import pluto.upik.domain.board.data.DTO.BoardQuery;
 import pluto.upik.domain.board.data.DTO.BoardResponse;
+import pluto.upik.domain.board.data.DTO.BoardSortType;
 import pluto.upik.domain.board.data.DTO.CommentPage;
 import pluto.upik.domain.board.service.BoardServiceInterface;
 import pluto.upik.shared.oauth2jwt.util.SecurityUtil;
@@ -23,9 +24,11 @@ public class BoardQueryResolver {
     private final SecurityUtil securityUtil;
 
     @SchemaMapping(typeName = "BoardQuery", field = "getQuestionList")
-    public BoardPage getQuestionList(BoardQuery parent, @Argument int page, @Argument int size) {
+    public BoardPage getQuestionList(BoardQuery parent, @Argument int page, @Argument int size, @Argument(name = "sortBy") BoardSortType sortBy) {
         try {
-            return boardService.getQuestionList(page, size);
+            // sortBy가 null이면 기본값으로 CHRONOLOGICAL 사용
+            BoardSortType sort = (sortBy != null) ? sortBy : BoardSortType.CHRONOLOGICAL;
+            return boardService.getQuestionList(page, size, sort);
         } catch (Exception e) {
             log.error("질문 목록 조회 중 오류 발생", e);
             throw new RuntimeException("질문 목록을 조회하는 중 오류가 발생했습니다.", e);

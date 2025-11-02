@@ -37,9 +37,18 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public BoardPage getQuestionList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Board> boardPage = boardRepository.findAll(pageable);
+    public BoardPage getQuestionList(int page, int size, BoardSortType sortBy) {
+        Page<Board> boardPage;
+
+        if (sortBy == BoardSortType.POPULAR) {
+            // 인기순 정렬 (댓글 많은 순)
+            Pageable pageable = PageRequest.of(page, size);
+            boardPage = boardRepository.findAllOrderByCommentCount(pageable);
+        } else {
+            // 시간순 정렬 (최신순) - 기본값
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            boardPage = boardRepository.findAll(pageable);
+        }
 
         List<BoardResponse> boardResponses = boardPage.getContent().stream()
                 .map(this::mapBoardToBoardResponse)

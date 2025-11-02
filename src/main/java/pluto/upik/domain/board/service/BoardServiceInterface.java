@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface BoardServiceInterface {
     // 질문 리스트 조회
-    BoardPage getQuestionList(int page, int size);
+    BoardPage getQuestionList(int page, int size, BoardSortType sortBy);
 
     // 내가 작성한 질문 리스트 조회
     BoardPage getMyQuestions(UUID userId, int page, int size);
