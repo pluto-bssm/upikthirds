@@ -59,9 +59,16 @@ input ReportInput {
   detail: String!
 }
 
+enum BoardSortType {
+  # 시간순 정렬 (최신순)
+  CHRONOLOGICAL
+  # 인기순 정렬 (댓글 많은 순)
+  POPULAR
+}
+
 type BoardQuery {
   # 질문 게시판 질문 리스트
-  getQuestionList(page: Int!, size: Int!): BoardPage!
+  getQuestionList(page: Int!, size: Int!, sortBy: BoardSortType = CHRONOLOGICAL): BoardPage!
 
   # 질문 게시판 검색하기
   searchQuestions(keyword: String!, page: Int!, size: Int!): BoardPage!

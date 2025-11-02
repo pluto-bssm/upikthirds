@@ -17,6 +17,13 @@ public interface BoardRepository extends JpaRepository<Board, UUID> {
     Page<Board> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
 
     Page<Board> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword, Pageable pageable);
+
     @Query(value = "SELECT b.* FROM boards b LEFT JOIN board_likes bl ON b.id = bl.board_id GROUP BY b.id ORDER BY COUNT(bl.id) DESC, b.created_at DESC", nativeQuery = true)
     Page<Board> findPopularBoards(Pageable pageable);
+
+    // 댓글 수 기준으로 정렬 (인기순)
+    @Query(value = "SELECT b.* FROM boards b LEFT JOIN comments c ON b.id = c.board_id GROUP BY b.id ORDER BY COUNT(c.id) DESC, b.created_at DESC",
+           countQuery = "SELECT COUNT(DISTINCT b.id) FROM boards b",
+           nativeQuery = true)
+    Page<Board> findAllOrderByCommentCount(Pageable pageable);
 }
