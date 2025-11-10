@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-public class CommentResponse {
+public class CommentResponse implements Serializable {
+    private static final long serialVersionUID = 1L;
     private UUID id;
     private String content;
     private UUID userId;

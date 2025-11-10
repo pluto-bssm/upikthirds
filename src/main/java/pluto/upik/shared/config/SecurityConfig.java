@@ -43,9 +43,9 @@ public class SecurityConfig {
     private static final String[] PERMIT_ALL_PATTERNS = {
             "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
             "/oauth2/**", "/login/**", "/auth/reissue",
-            "/graphql", "/graphiql", // GraphQL 엔드포인트 접근 허용
+            "/graphql", "/graphiql", "/graphiql/**", // GraphQL 엔드포인트 접근 허용
             "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
-            "/error","/auth/**"
+            "/error","/auth/**", "/actuator/**"
     };
 
     @Bean
