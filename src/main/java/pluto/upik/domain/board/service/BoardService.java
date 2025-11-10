@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import pluto.upik.domain.board.data.model.Board;
 import pluto.upik.domain.board.data.model.Comment;
 import pluto.upik.domain.board.repository.BoardRepository;
 import pluto.upik.domain.board.repository.CommentRepository;
+import pluto.upik.shared.cache.CacheNames;
 import pluto.upik.shared.exception.BadWordException;
 import pluto.upik.shared.exception.BusinessException;
 import pluto.upik.shared.filter.BadWordFilterService;
@@ -37,6 +39,7 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.BOARD_LIST, key = "T(java.lang.String).format('%d:%d:%s', #page, #size, #sortBy)")
     public BoardPage getQuestionList(int page, int size, BoardSortType sortBy) {
         Page<Board> boardPage;
 
@@ -63,6 +66,7 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.BOARD_USER, key = "T(java.lang.String).format('%s:%d:%d', #userId, #page, #size)")
     public BoardPage getMyQuestions(UUID userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Board> boardPage = boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
@@ -80,6 +84,7 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.BOARD_SEARCH, key = "T(java.lang.String).format('%s:%d:%d', #keyword, #page, #size)")
     public BoardPage searchQuestions(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Board> boardPage = boardRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
@@ -110,6 +115,12 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.BOARD_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_USER, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_SEARCH, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_COMMENTS, allEntries = true)
+    })
     public BoardResponse createQuestion(CreateBoardInput input, UUID userId) {
         // 욕설 검증
         if (badWordFilterService.containsBadWord(input.getTitle())) {
@@ -134,6 +145,12 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.BOARD_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_USER, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_SEARCH, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_COMMENTS, allEntries = true)
+    })
     public BoardResponse updateQuestion(UUID boardId, UpdateBoardInput input, UUID userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 게시글입니다."));
@@ -160,6 +177,12 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.BOARD_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_USER, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_SEARCH, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_COMMENTS, allEntries = true)
+    })
     public boolean deleteQuestion(UUID boardId, UUID userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 게시글입니다."));
@@ -177,6 +200,12 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.BOARD_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_USER, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_SEARCH, allEntries = true),
+            @CacheEvict(value = CacheNames.BOARD_COMMENTS, allEntries = true)
+    })
     public CommentResponse createComment(CreateCommentInput input, UUID userId) {
         // 욕설 검증
         if (badWordFilterService.containsBadWord(input.getContent())) {
@@ -208,6 +237,7 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.BOARD_COMMENTS, key = "T(java.lang.String).format('%s:%d:%d', #boardId, #page, #size)")
     public CommentPage getComments(UUID boardId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         

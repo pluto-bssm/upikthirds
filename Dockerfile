@@ -11,12 +11,12 @@ RUN chmod +x gradlew
 # 전체 소스 복사
 COPY . .
 
-# JAR 빌드 (테스트 제외)
-RUN ./gradlew clean build -x test
+# 실행 가능한 Boot JAR만 빌드 (테스트 제외)
+RUN ./gradlew clean bootJar -x test
 
-# 빌드된 JAR 파일 단일 파일로 복사
+# 빌드된 실행 JAR 파일 복사 (plain JAR 제외)
 RUN mkdir -p /app/target/ && \
-    cp $(find /app/build/libs/ -name "*.jar" | head -n 1) /app/target/app.jar
+    cp $(find /app/build/libs/ -name "*SNAPSHOT.jar" ! -name "*-plain.jar" -print -quit) /app/target/app.jar
 
 # 2. 실행용 JRE 이미지
 FROM eclipse-temurin:21-jre

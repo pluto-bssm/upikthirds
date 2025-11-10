@@ -41,7 +41,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     // JWT 검증을 스킵할 정확한 경로 목록
     private static final Set<String> SKIP_EXACT_PATHS = Set.of(
-            "/auth/reissue", "/favicon.ico", "/error", "/api/my"
+            "/auth/reissue", "/favicon.ico", "/error", "/api/my",
+            "/graphql", "/graphiql"
     );
 
     @Override
@@ -58,7 +59,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 2. Access Token 추출 (헤더 우선, 쿠키 보조)
         String accessToken = extractAccessToken(request);
-        System.out.println("accessToken = " + accessToken);
         if (accessToken == null) {
             log.debug("No Access Token found for URI: {}", requestURI);
             filterChain.doFilter(request, response);

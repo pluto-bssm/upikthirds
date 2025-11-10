@@ -2,6 +2,9 @@ package pluto.upik.domain.vote.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pluto.upik.domain.option.data.model.Option;
@@ -14,6 +17,7 @@ import pluto.upik.domain.vote.data.model.Vote;
 import pluto.upik.domain.vote.repository.VoteRepository;
 import pluto.upik.domain.voteResponse.repository.VoteResponseRepository;
 import pluto.upik.domain.voteResponse.service.VoteResponseService;
+import pluto.upik.shared.cache.CacheNames;
 import pluto.upik.shared.exception.ResourceNotFoundException;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
@@ -35,6 +39,13 @@ public class VoteServiceUpdated {
     private final UserRepository userRepository;
     private final VoteResponseService voteResponseService;
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.VOTE_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_DETAIL, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_POPULAR, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_LEAST, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_MY, allEntries = true)
+    })
     public VotePayload createVote(CreateVoteInput input, UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId));
@@ -62,6 +73,7 @@ public class VoteServiceUpdated {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.VOTE_LIST, key = "T(java.lang.String).format('%s:%b:%b', #userId, #includeExpired, #includeHasVoted)")
     public List<VotePayload> getAllVotes(UUID userId, boolean includeExpired, boolean includeHasVoted) {
         LocalDate currentDate = LocalDate.now();
         List<Vote> votes;
@@ -111,6 +123,7 @@ public class VoteServiceUpdated {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.VOTE_DETAIL, key = "T(java.lang.String).format('%s:%s', #voteId, T(java.util.Objects).toString(#userId))")
     public VoteDetailPayload getVoteById(UUID voteId, UUID userId) {
         Vote vote = voteRepository.findById(voteId)
                 .orElseThrow(() -> new ResourceNotFoundException("투표를 찾을 수 없습니다: " + voteId));
@@ -153,6 +166,7 @@ public class VoteServiceUpdated {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.VOTE_POPULAR, key = "T(java.lang.String).format('%s:%b:%b', #userId, #includeExpired, #includeHasVoted)")
     public List<VotePayload> getMostPopularOpenVote(UUID userId, boolean includeExpired, boolean includeHasVoted) {
         LocalDate currentDate = LocalDate.now();
         List<Vote> votes;
@@ -211,6 +225,7 @@ public class VoteServiceUpdated {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.VOTE_LEAST, key = "T(java.lang.String).format('%s:%b:%b', #userId, #includeExpired, #includeHasVoted)")
     public VotePayload getLeastPopularOpenVote(UUID userId, boolean includeExpired, boolean includeHasVoted) {
         LocalDate currentDate = LocalDate.now();
         List<Vote> votes;
@@ -315,6 +330,7 @@ public class VoteServiceUpdated {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.VOTE_MY, key = "T(java.lang.String).format('%s:%b:%b', #userId, #includeExpired, #includeHasVoted)")
     public List<VotePayload> getMyVotes(UUID userId, boolean includeExpired, boolean includeHasVoted) {
         return getVotesByUserId(userId, includeExpired, includeHasVoted);
     }

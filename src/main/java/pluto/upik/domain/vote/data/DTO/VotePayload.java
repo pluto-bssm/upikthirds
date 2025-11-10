@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import pluto.upik.domain.option.data.model.Option;
 import pluto.upik.domain.vote.data.model.Vote;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -16,7 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VotePayload {
+public class VotePayload implements Serializable {
+    private static final long serialVersionUID = 1L;
     private UUID id;
     private String title;  // 스키마와 일치하도록 question -> title로 변경
     private String category;

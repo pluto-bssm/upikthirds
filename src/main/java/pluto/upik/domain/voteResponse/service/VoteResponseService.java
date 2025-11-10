@@ -2,6 +2,8 @@ package pluto.upik.domain.voteResponse.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pluto.upik.domain.option.data.model.Option;
@@ -12,6 +14,7 @@ import pluto.upik.domain.voteResponse.data.DTO.CreateVoteResponseInput;
 import pluto.upik.domain.voteResponse.data.DTO.VoteResponsePayload;
 import pluto.upik.domain.voteResponse.data.model.VoteResponse;
 import pluto.upik.domain.voteResponse.repository.VoteResponseRepository;
+import pluto.upik.shared.cache.CacheNames;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 
@@ -49,6 +52,13 @@ public class VoteResponseService {
     }
 
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.VOTE_LIST, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_DETAIL, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_POPULAR, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_LEAST, allEntries = true),
+            @CacheEvict(value = CacheNames.VOTE_MY, allEntries = true)
+    })
     public VoteResponsePayload createVoteResponse(CreateVoteResponseInput input, UUID userId) {
         // 1. 사용자 조회
         User user = userRepository.findById(userId)
