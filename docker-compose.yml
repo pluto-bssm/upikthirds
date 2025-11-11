@@ -3,9 +3,11 @@ services:
     image: mariadb:11.3
     container_name: upik-mariadb
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      MARIADB_ROOT_PASSWORD: pluto
-      MARIADB_DATABASE: upik
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
     volumes:
       - mariadb_data:/var/lib/mysql
     healthcheck:
@@ -50,14 +52,19 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/upik
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: pluto
-      SPRING_ELASTICSEARCH_REST_URIS: http://elasticsearch:9200
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
+      # Database
+      DB_HOST: mariadb
+      DB_PORT: 3306
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      # Elasticsearch
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "8080:8080"
 
@@ -101,9 +108,11 @@ services:
     depends_on:
       prometheus:
         condition: service_started
+    env_file:
+      - .env
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana

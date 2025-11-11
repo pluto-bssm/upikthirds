@@ -1,4 +1,12 @@
+# Environment variables and sensitive files
+.env
 .env.properties
+.env.local
+.env.*.local
+
+# Google Cloud credentials
+*.json
+!gradle-wrapper.jar
 
 HELP.md
 .gradle
