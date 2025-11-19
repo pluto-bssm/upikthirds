@@ -41,8 +41,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     // JWT 검증을 스킵할 정확한 경로 목록
     private static final Set<String> SKIP_EXACT_PATHS = Set.of(
-            "/auth/reissue", "/favicon.ico", "/error", "/api/my",
-            "/graphql", "/graphiql"
+            "/auth/reissue", "/favicon.ico", "/error", "/api/my"
     );
 
     @Override
