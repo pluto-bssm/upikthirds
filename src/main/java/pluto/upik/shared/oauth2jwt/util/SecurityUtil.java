@@ -35,8 +35,13 @@ public class SecurityUtil {
             "anonymousUser".equals(authentication.getPrincipal())) {
             throw new BusinessException("인증되지 않은 사용자입니다.", "UNAUTHORIZED");
         }
-        
-        return (CustomOAuth2User) authentication.getPrincipal();
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomOAuth2User)) {
+            throw new BusinessException("인증 정보가 올바르지 않습니다.", "UNAUTHORIZED");
+        }
+
+        return (CustomOAuth2User) principal;
     }
     
     /**

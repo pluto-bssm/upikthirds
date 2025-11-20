@@ -15,7 +15,10 @@ public class UserService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            return (CustomOAuth2User) authentication.getPrincipal();
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof CustomOAuth2User) {
+                return (CustomOAuth2User) principal;
+            }
         }
 
         return null; // 인증되지 않은 사용자
