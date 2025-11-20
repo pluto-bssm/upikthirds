@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -61,12 +62,10 @@ public class VoteService {
         Vote savedVote = voteRepository.save(vote);
 
         // 3. Option들 생성
-        List<Option> options = input.getOptions().stream().map(content ->
-                Option.builder()
-                        .vote(savedVote)
-                        .content(content)
-                        .build()
-        ).toList();
+        List<Option> options = input.getOptions().stream().map(content -> Option.builder()
+                .vote(savedVote)
+                .content(content)
+                .build()).toList();
         // 4. Option들 저장
         List<Option> savedOptions = optionRepository.saveAll(options);
 
@@ -106,23 +105,21 @@ public class VoteService {
                 float percentage = totalResponses > 0 ? (float) optionCount * 100 / totalResponses : 0;
 
                 optionStats.add(new OptionWithStatsPayload(
-                    option.getId(),
-                    option.getContent(),
-                    optionCount.intValue(),
-                    percentage
-                ));
+                        option.getId().toString(),
+                        option.getContent(),
+                        optionCount.intValue(),
+                        percentage));
             }
 
             // 사용자가 이 투표에 참여했는지 확인
             boolean hasVoted = voteResponseService.hasUserVoted(userId, vote.getId());
 
             votePayloads.add(VotePayload.fromEntityWithStats(
-                vote,
-                options,
-                optionStats,
-                totalResponses.intValue(),
-                hasVoted
-            ));
+                    vote,
+                    options,
+                    optionStats,
+                    totalResponses.intValue(),
+                    hasVoted));
         }
 
         return votePayloads;
@@ -144,7 +141,7 @@ public class VoteService {
     /**
      * 지정된 투표 ID와 사용자 ID로 투표 상세 정보를 조회하여 반환합니다.
      *
-     * 투표의 질문, 카테고리, 상태, 생성자 이름, 마감일, 전체 응답 수, 각 선택지별 통계(응답 수 및 비율), 
+     * 투표의 질문, 카테고리, 상태, 생성자 이름, 마감일, 전체 응답 수, 각 선택지별 통계(응답 수 및 비율),
      * 그리고 해당 사용자의 투표 참여 여부를 포함한 상세 정보를 제공합니다.
      *
      * @param voteId 조회할 투표의 ID
@@ -166,11 +163,10 @@ public class VoteService {
             float percentage = totalResponses > 0 ? (float) optionCount * 100 / totalResponses : 0;
 
             optionStats.add(new OptionWithStatsPayload(
-                option.getId(),
-                option.getContent(),
-                optionCount.intValue(),
-                percentage
-            ));
+                    option.getId().toString(),
+                    option.getContent(),
+                    optionCount.intValue(),
+                    percentage));
         }
 
         String creatorName = null;
@@ -186,13 +182,14 @@ public class VoteService {
         boolean hasVoted = voteResponseService.hasUserVoted(userId, voteId);
 
         return VoteDetailPayload.builder()
-                .id(vote.getId())
+                .id(vote.getId().toString())
                 .title(vote.getQuestion())
                 .category(vote.getCategory())
                 .status(vote.getStatus().name())
                 .createdBy(creatorName)
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                .closureType(vote.getClosureType() != null ? vote.getClosureType().name() : Vote.ClosureType.DEFAULT.name())
+                .closureType(
+                        vote.getClosureType() != null ? vote.getClosureType().name() : Vote.ClosureType.DEFAULT.name())
                 .participantThreshold(vote.getParticipantThreshold())
                 .totalResponses(totalResponses.intValue())
                 .options(optionStats)
@@ -222,9 +219,9 @@ public class VoteService {
 
         // 응답 수가 많은 순으로 정렬
         List<Map.Entry<Vote, Long>> sortedVotes = voteResponseCounts.entrySet().stream()
-            .sorted(Map.Entry.<Vote, Long>comparingByValue().reversed())
-            .limit(3) // 상위 3개만 선택
-            .collect(Collectors.toList());
+                .sorted(Map.Entry.<Vote, Long>comparingByValue().reversed())
+                .limit(3) // 상위 3개만 선택
+                .collect(Collectors.toList());
 
         List<VotePayload> result = new ArrayList<>();
         for (Map.Entry<Vote, Long> entry : sortedVotes) {
@@ -238,11 +235,10 @@ public class VoteService {
                 float percentage = totalResponses > 0 ? (float) optionCount * 100 / totalResponses : 0;
 
                 optionStats.add(new OptionWithStatsPayload(
-                    option.getId(),
-                    option.getContent(),
-                    optionCount.intValue(),
-                    percentage
-                ));
+                        option.getId().toString(),
+                        option.getContent(),
+                        optionCount.intValue(),
+                        percentage));
             }
 
             // 요청에 따라 투표하지 않은 것으로 표시
@@ -255,7 +251,8 @@ public class VoteService {
     /**
      * 응답 수가 가장 적은 OPEN 상태의 투표를 조회하여 통계와 함께 반환합니다.
      *
-     * 투표가 없을 경우 null을 반환하며, 반환되는 투표에는 각 선택지별 응답 수와 비율, 전체 응답 수, 사용자의 참여 여부(항상 false)가 포함됩니다.
+     * 투표가 없을 경우 null을 반환하며, 반환되는 투표에는 각 선택지별 응답 수와 비율, 전체 응답 수, 사용자의 참여 여부(항상
+     * false)가 포함됩니다.
      *
      * @return 응답 수가 가장 적은 OPEN 상태 투표의 통계 정보가 담긴 VotePayload, 투표가 없으면 null
      */
@@ -274,9 +271,8 @@ public class VoteService {
 
         // 응답 수가 가장 적은 투표 찾기
         Map.Entry<Vote, Long> leastPopular = Collections.min(
-            voteResponseCounts.entrySet(),
-            Map.Entry.comparingByValue()
-        );
+                voteResponseCounts.entrySet(),
+                Map.Entry.comparingByValue());
 
         Vote vote = leastPopular.getKey();
         Long totalResponses = leastPopular.getValue();
@@ -288,11 +284,10 @@ public class VoteService {
             float percentage = totalResponses > 0 ? (float) optionCount * 100 / totalResponses : 0;
 
             optionStats.add(new OptionWithStatsPayload(
-                option.getId(),
-                option.getContent(),
-                optionCount.intValue(),
-                percentage
-            ));
+                    option.getId().toString(),
+                    option.getContent(),
+                    optionCount.intValue(),
+                    percentage));
         }
 
         // 요청에 따라 투표하지 않은 것으로 표시
@@ -303,8 +298,8 @@ public class VoteService {
      * 투표 목록을 정렬하여 가져옵니다.
      *
      * @param sortBy 정렬 기준 ("date", "participation", "completion")
-     * @param page 페이지 번호
-     * @param size 페이지 크기
+     * @param page   페이지 번호
+     * @param size   페이지 크기
      * @return 정렬된 투표 목록
      */
     public List<VotePayload> getVotesSorted(String sortBy, int page, int size) {
