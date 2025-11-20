@@ -124,7 +124,7 @@ enum VoteClosureType {
 """
 type VotePayload {
   "투표 고유 ID (UUID)"
-  id: ID
+  id: String
 
   "투표 제목"
   title: String
@@ -159,7 +159,7 @@ type VotePayload {
 """
 type Option {
   "선택지 고유 ID"
-  id: ID
+  id: String
 
   "선택지 내용"
   content: String
@@ -246,7 +246,7 @@ type VoteQuery {
   """
   getVoteById(
     "투표 ID (UUID 형식)"
-    id: ID!
+    id: String!
   ): VoteDetailPayload
 
   """
@@ -374,7 +374,7 @@ type VoteQuery {
 """
 type VoteDetailPayload {
   "투표 고유 ID (UUID)"
-  id: ID
+  id: String
 
   "투표 제목"
   title: String
@@ -413,7 +413,7 @@ type VoteDetailPayload {
 """
 type OptionWithStats {
   "선택지 고유 ID"
-  id: ID
+  id: String
 
   "선택지 내용"
   content: String
