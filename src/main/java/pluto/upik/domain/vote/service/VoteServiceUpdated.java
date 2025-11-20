@@ -95,7 +95,7 @@ public class VoteServiceUpdated {
                 float percentage = totalResponses > 0 ? (float) optionCount * 100 / totalResponses : 0;
 
                 optionStats.add(new OptionWithStatsPayload(
-                    option.getId(),
+                    option.getId().toString(),
                     option.getContent(),
                     optionCount.intValue(),
                     percentage
@@ -151,7 +151,7 @@ public class VoteServiceUpdated {
         boolean hasVoted = voteResponseService.hasUserVoted(userId, voteId);
 
         return VoteDetailPayload.builder()
-                .id(vote.getId())
+                .id(vote.getId().toString())
                 .title(vote.getQuestion())
                 .category(vote.getCategory())
                 .status(vote.getStatus().name())

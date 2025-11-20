@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class VoteDetailPayload implements Serializable {
     private static final long serialVersionUID = 1L;
-    private UUID id;
+    private String id;
     private String title;
     private String category;
     private String status;
