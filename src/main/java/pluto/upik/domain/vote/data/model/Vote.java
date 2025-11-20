@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import pluto.upik.shared.oauth2jwt.entity.User;
 
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class Vote {
      * 투표 ID (기본 키)
      */
     @Id
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
