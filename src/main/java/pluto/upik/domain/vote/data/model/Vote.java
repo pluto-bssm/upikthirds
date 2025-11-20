@@ -26,7 +26,7 @@ public class Vote {
      * 투표 ID (기본 키)
      */
     @Id
-    @Column(columnDefinition = "uuid")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     /**
