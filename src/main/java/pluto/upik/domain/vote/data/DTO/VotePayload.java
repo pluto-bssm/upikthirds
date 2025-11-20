@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 public class VotePayload implements Serializable {
     private static final long serialVersionUID = 1L;
-    private UUID id;
+    private String id;
     private String title;  // 스키마와 일치하도록 question -> title로 변경
     private String category;
     private String finishedAt;
@@ -45,7 +45,7 @@ public class VotePayload implements Serializable {
      */
     public static VotePayload fromEntity(Vote vote, List<Option> options) {
         return VotePayload.builder()
-                .id(vote.getId())
+                .id(vote.getId().toString())
                 .title(vote.getQuestion())  // question 필드를 title로 매핑
                 .category(vote.getCategory())
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))
@@ -54,7 +54,7 @@ public class VotePayload implements Serializable {
                 .participantThreshold(vote.getParticipantThreshold())
                 .totalResponses(0) // 기본값
                 .options(options.stream()
-                        .map(option -> new OptionWithStatsPayload(option.getId(), option.getContent(), 0, 0))
+                        .map(option -> new OptionWithStatsPayload(option.getId().toString(), option.getContent(), 0, 0))
                         .toList())
                 .hasVoted(false) // 기본값
                 .build();
@@ -90,7 +90,7 @@ public class VotePayload implements Serializable {
                                                  List<OptionWithStatsPayload> optionStats, int totalResponses,
                                                  boolean hasVoted) {
         return VotePayload.builder()
-                .id(vote.getId())
+                .id(vote.getId().toString())
                 .title(vote.getQuestion())
                 .category(vote.getCategory())
                 .finishedAt(vote.getFinishedAt().format(DateTimeFormatter.ISO_LOCAL_DATE))

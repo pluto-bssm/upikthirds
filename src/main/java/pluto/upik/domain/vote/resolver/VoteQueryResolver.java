@@ -15,7 +15,7 @@
 //
 //// @Controller 어노테이션을 제거하여 이 클래스가 GraphQL 리졸버로 등록되지 않도록 함
 //// 대신 @Component를 사용하여 필요한 경우 다른 클래스에서 주입받을 수 있도록 함
-//@Component
+////@Component
 //@RequiredArgsConstructor
 //public class VoteQueryResolver {
 //
