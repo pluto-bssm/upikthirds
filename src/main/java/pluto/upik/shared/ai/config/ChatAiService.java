@@ -23,7 +23,7 @@ public class ChatAiService {
     @Value("${gemini.api.model:gemini-2.0-flash-exp}")
     private String model;
 
-    @Value("${gemini.api.fallback-model:gemini-1.5-flash}")
+    @Value("${gemini.api.fallback-model:gemini-1.5-flash-latest}")
     private String fallbackModel;
 
     @Autowired
