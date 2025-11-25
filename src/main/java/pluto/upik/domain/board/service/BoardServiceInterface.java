@@ -8,16 +8,16 @@ import java.util.UUID;
 
 public interface BoardServiceInterface {
     // 질문 리스트 조회
-    BoardPage getQuestionList(int page, int size, BoardSortType sortBy);
+    BoardPage getQuestionList(int page, int size, BoardSortType sortBy, UUID currentUserId);
 
     // 내가 작성한 질문 리스트 조회
     BoardPage getMyQuestions(UUID userId, int page, int size);
 
     // 질문 검색
-    BoardPage searchQuestions(String keyword, int page, int size);
+    BoardPage searchQuestions(String keyword, int page, int size, UUID currentUserId);
     
     // 질문 상세 조회
-    BoardResponse getQuestionDetail(UUID boardId);
+    BoardResponse getQuestionDetail(UUID boardId, UUID currentUserId);
     
     // 질문 작성
     BoardResponse createQuestion(CreateBoardInput input, UUID userId);
@@ -39,4 +39,16 @@ public interface BoardServiceInterface {
     
     // 댓글 신고
     boolean reportComment(UUID commentId, String reason, String detail, UUID reporterId);
+
+    // 북마크 토글
+    boolean toggleBoardBookmark(UUID userId, UUID boardId);
+
+    // 북마크 여부
+    boolean isBoardBookmarked(UUID userId, UUID boardId);
+
+    // 북마크 카운트
+    long getBoardBookmarkCount(UUID boardId);
+
+    // 북마크한 질문 목록
+    BoardPage getBookmarkedQuestions(UUID userId, int page, int size);
 }

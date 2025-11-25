@@ -28,7 +28,8 @@ public class BoardQueryResolver {
         try {
             // sortBy가 null이면 기본값으로 CHRONOLOGICAL 사용
             BoardSortType sort = (sortBy != null) ? sortBy : BoardSortType.CHRONOLOGICAL;
-            return boardService.getQuestionList(page, size, sort);
+            UUID currentUserId = getCurrentUserIdIfAvailable();
+            return boardService.getQuestionList(page, size, sort, currentUserId);
         } catch (Exception e) {
             log.error("질문 목록 조회 중 오류 발생", e);
             throw new RuntimeException("질문 목록을 조회하는 중 오류가 발생했습니다.", e);
@@ -38,7 +39,8 @@ public class BoardQueryResolver {
     @SchemaMapping(typeName = "BoardQuery", field = "searchQuestions")
     public BoardPage searchQuestions(BoardQuery parent, @Argument String keyword, @Argument int page, @Argument int size) {
         try {
-            return boardService.searchQuestions(keyword, page, size);
+            UUID currentUserId = getCurrentUserIdIfAvailable();
+            return boardService.searchQuestions(keyword, page, size, currentUserId);
         } catch (Exception e) {
             log.error("질문 검색 중 오류 발생: keyword={}", keyword, e);
             throw new RuntimeException("질문을 검색하는 중 오류가 발생했습니다.", e);
@@ -49,7 +51,8 @@ public class BoardQueryResolver {
     public BoardResponse getQuestionDetail(BoardQuery parent, @Argument String boardId) {
         try {
             UUID boardUuid = UUID.fromString(boardId);
-            return boardService.getQuestionDetail(boardUuid);
+            UUID currentUserId = getCurrentUserIdIfAvailable();
+            return boardService.getQuestionDetail(boardUuid, currentUserId);
         } catch (Exception e) {
             log.error("질문 상세 조회 중 오류 발생: boardId={}", boardId, e);
             throw new RuntimeException("질문 상세 정보를 조회하는 중 오류가 발생했습니다.", e);
@@ -75,6 +78,25 @@ public class BoardQueryResolver {
         } catch (Exception e) {
             log.error("내가 작성한 질문 목록 조회 중 오류 발생", e);
             throw new RuntimeException("내가 작성한 질문 목록을 조회하는 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    @SchemaMapping(typeName = "BoardQuery", field = "getBookmarkedQuestions")
+    public BoardPage getBookmarkedQuestions(BoardQuery parent, @Argument int page, @Argument int size) {
+        try {
+            UUID currentUserId = securityUtil.getCurrentUserId();
+            return boardService.getBookmarkedQuestions(currentUserId, page, size);
+        } catch (Exception e) {
+            log.error("북마크한 질문 목록 조회 중 오류 발생", e);
+            throw new RuntimeException("북마크한 질문 목록을 조회하는 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private UUID getCurrentUserIdIfAvailable() {
+        try {
+            return securityUtil.getCurrentUserId();
+        } catch (Exception e) {
+            return null;
         }
     }
 }
