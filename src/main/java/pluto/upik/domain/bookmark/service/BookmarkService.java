@@ -50,6 +50,7 @@ public class BookmarkService implements BookmarkServiceInterface {
                         .id(guide.getId())
                         .title(guide.getTitle())
                         .content(guide.getContent())
+                        .category(guide.getCategory())
                         .createdAt(guide.getCreatedAt())
                         .like(guide.getLike() != null ? guide.getLike().intValue() : 0) // Long -> Integer 변환
                         .voteId(guide.getVote() != null ? guide.getVote().getId() : null) // getVoteId() 대신 직접 접근
@@ -96,6 +97,7 @@ public class BookmarkService implements BookmarkServiceInterface {
                             .id(guide.getId())
                             .title(guide.getTitle())
                             .content(guide.getContent())
+                            .category(guide.getCategory())
                             .createdAt(guide.getCreatedAt())
                             .like(guide.getLike() != null ? guide.getLike().intValue() : 0) // Long -> Integer 변환
                             .voteId(guide.getVote() != null ? guide.getVote().getId() : null) // getVoteId() 대신 직접 접근
@@ -109,6 +111,7 @@ public class BookmarkService implements BookmarkServiceInterface {
                         .id(guide.getId())
                         .title(guide.getTitle())
                         .content(guide.getContent())
+                        .category(guide.getCategory())
                         .createdAt(guide.getCreatedAt())
                         .like(guide.getLike() != null ? guide.getLike().intValue() : 0) // Long -> Integer 변환
                         .voteId(guide.getVote() != null ? guide.getVote().getId() : null) // getVoteId() 대신 직접 접근
@@ -127,6 +130,7 @@ public class BookmarkService implements BookmarkServiceInterface {
                         .id(guide.getId())
                         .title(guide.getTitle())
                         .content(guide.getContent())
+                        .category(guide.getCategory())
                         .createdAt(guide.getCreatedAt())
                             .like(guide.getLike() != null ? guide.getLike().intValue() : 0)
                             .voteId(guide.getVote() != null ? guide.getVote().getId() : null)
