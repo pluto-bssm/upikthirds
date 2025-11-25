@@ -143,7 +143,7 @@ public class BoardService implements BoardServiceInterface {
         board.setUpdatedAt(LocalDateTime.now());
 
         Board savedBoard = boardRepository.save(board);
-        return mapBoardToBoardResponse(savedBoard);
+        return mapBoardToBoardResponse(savedBoard, userId);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class BoardService implements BoardServiceInterface {
         board.setUpdatedAt(LocalDateTime.now());
 
         Board updatedBoard = boardRepository.save(board);
-        return mapBoardToBoardResponse(updatedBoard);
+        return mapBoardToBoardResponse(updatedBoard, userId);
     }
 
     @Override
