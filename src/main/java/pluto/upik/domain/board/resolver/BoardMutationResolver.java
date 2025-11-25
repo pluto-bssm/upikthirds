@@ -95,4 +95,17 @@ public class BoardMutationResolver {
             throw new RuntimeException("댓글을 신고하는 중 오류가 발생했습니다.", e);
         }
     }
+
+    @RequireAuth
+    @SchemaMapping(typeName = "BoardMutation", field = "toggleBoardBookmark")
+    public boolean toggleBoardBookmark(BoardMutation parent, @Argument String boardId) {
+        try {
+            UUID userId = securityUtil.getCurrentUserId();
+            UUID boardUuid = UUID.fromString(boardId);
+            return boardService.toggleBoardBookmark(userId, boardUuid);
+        } catch (Exception e) {
+            log.error("질문 북마크 토글 중 오류 발생: boardId={}", boardId, e);
+            throw new RuntimeException("질문 북마크 처리 중 오류가 발생했습니다.", e);
+        }
+    }
 }

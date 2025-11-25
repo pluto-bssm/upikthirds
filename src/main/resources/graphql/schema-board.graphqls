@@ -81,6 +81,9 @@ type BoardQuery {
 
   # 내가 작성한 질문 리스트 조회
   getMyQuestions(page: Int!, size: Int!): BoardPage!
+
+  # 내가 북마크한 질문 리스트 조회
+  getBookmarkedQuestions(page: Int! = 0, size: Int! = 10): BoardPage!
 }
 
 type BoardMutation {
@@ -101,4 +104,7 @@ type BoardMutation {
 
   # 게시판 댓글 신고하기
   reportComment(commentId: ID!, reason: String!, detail: String!): Boolean!
+
+  # 질문 북마크 토글
+  toggleBoardBookmark(boardId: ID!): Boolean!
 }

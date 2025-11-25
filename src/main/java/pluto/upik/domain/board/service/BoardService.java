@@ -16,6 +16,8 @@ import pluto.upik.domain.board.data.model.Board;
 import pluto.upik.domain.board.data.model.Comment;
 import pluto.upik.domain.board.repository.BoardRepository;
 import pluto.upik.domain.board.repository.CommentRepository;
+import pluto.upik.domain.bookmark.data.model.BoardBookmark;
+import pluto.upik.domain.bookmark.repository.BoardBookmarkRepository;
 import pluto.upik.shared.cache.CacheNames;
 import pluto.upik.shared.exception.BadWordException;
 import pluto.upik.shared.exception.BusinessException;
@@ -36,11 +38,12 @@ public class BoardService implements BoardServiceInterface {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final BadWordFilterService badWordFilterService;
+    private final pluto.upik.domain.bookmark.repository.BoardBookmarkRepository boardBookmarkRepository;
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.BOARD_LIST, key = "T(java.lang.String).format('%d:%d:%s', #page, #size, #sortBy)")
-    public BoardPage getQuestionList(int page, int size, BoardSortType sortBy) {
+    @Cacheable(value = CacheNames.BOARD_LIST, key = "T(java.lang.String).format('%s:%d:%d:%s', #currentUserId, #page, #size, #sortBy)")
+    public BoardPage getQuestionList(int page, int size, BoardSortType sortBy, UUID currentUserId) {
         Page<Board> boardPage;
 
         if (sortBy == BoardSortType.POPULAR) {
@@ -54,7 +57,7 @@ public class BoardService implements BoardServiceInterface {
         }
 
         List<BoardResponse> boardResponses = boardPage.getContent().stream()
-                .map(this::mapBoardToBoardResponse)
+                .map(board -> mapBoardToBoardResponse(board, currentUserId))
                 .collect(Collectors.toList());
 
         return BoardPage.builder()
@@ -72,7 +75,7 @@ public class BoardService implements BoardServiceInterface {
         Page<Board> boardPage = boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
 
         List<BoardResponse> boardResponses = boardPage.getContent().stream()
-                .map(this::mapBoardToBoardResponse)
+                .map(board -> mapBoardToBoardResponse(board, userId))
                 .collect(Collectors.toList());
 
         return BoardPage.builder()
@@ -84,13 +87,13 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.BOARD_SEARCH, key = "T(java.lang.String).format('%s:%d:%d', #keyword, #page, #size)")
-    public BoardPage searchQuestions(String keyword, int page, int size) {
+    @Cacheable(value = CacheNames.BOARD_SEARCH, key = "T(java.lang.String).format('%s:%s:%d:%d', #currentUserId, #keyword, #page, #size)")
+    public BoardPage searchQuestions(String keyword, int page, int size, UUID currentUserId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Board> boardPage = boardRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
         
         List<BoardResponse> boardResponses = boardPage.getContent().stream()
-                .map(this::mapBoardToBoardResponse)
+                .map(board -> mapBoardToBoardResponse(board, currentUserId))
                 .collect(Collectors.toList());
         
         return BoardPage.builder()
@@ -102,7 +105,7 @@ public class BoardService implements BoardServiceInterface {
 
     @Override
     @Transactional
-    public BoardResponse getQuestionDetail(UUID boardId) {
+    public BoardResponse getQuestionDetail(UUID boardId, UUID currentUserId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 게시글입니다."));
         
@@ -110,7 +113,7 @@ public class BoardService implements BoardServiceInterface {
         board.setViewCount(board.getViewCount() + 1);
         boardRepository.save(board);
         
-        return mapBoardToBoardResponse(board);
+        return mapBoardToBoardResponse(board, currentUserId);
     }
 
     @Override
@@ -198,6 +201,72 @@ public class BoardService implements BoardServiceInterface {
         return true;
     }
 
+    @Override
+    @Transactional
+    public boolean toggleBoardBookmark(UUID userId, UUID boardId) {
+        Optional<BoardBookmark> existing = boardBookmarkRepository.findByUserIdAndBoardId(userId, boardId);
+        if (existing.isPresent()) {
+            boardBookmarkRepository.delete(existing.get());
+            return false;
+        }
+
+        BoardBookmark bookmark = BoardBookmark.builder()
+                .userId(userId)
+                .boardId(boardId)
+                .build();
+        boardBookmarkRepository.save(bookmark);
+        return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isBoardBookmarked(UUID userId, UUID boardId) {
+        return boardBookmarkRepository.existsByUserIdAndBoardId(userId, boardId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long getBoardBookmarkCount(UUID boardId) {
+        return boardBookmarkRepository.countByBoardId(boardId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BoardPage getBookmarkedQuestions(UUID userId, int page, int size) {
+        List<UUID> boardIds = boardBookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(pluto.upik.domain.bookmark.data.model.BoardBookmark::getBoardId)
+                .collect(Collectors.toList());
+
+        if (boardIds.isEmpty()) {
+            return BoardPage.builder()
+                    .content(List.of())
+                    .totalElements(0)
+                    .totalPages(0)
+                    .build();
+        }
+
+        List<Board> boards = boardRepository.findAllById(boardIds)
+                .stream()
+                .sorted(Comparator.comparingInt(boardIds::indexOf))
+                .skip((long) page * size)
+                .limit(size)
+                .collect(Collectors.toList());
+
+        List<BoardResponse> content = boards.stream()
+                .map(board -> mapBoardToBoardResponse(board, userId))
+                .collect(Collectors.toList());
+
+        int totalElements = boardIds.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return BoardPage.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();
+    }
+    
     @Override
     @Transactional
     @Caching(evict = {
@@ -295,9 +364,9 @@ public class BoardService implements BoardServiceInterface {
     }
     
     // Board 엔티티를 BoardResponse DTO로 변환하는 메소드
-    private BoardResponse mapBoardToBoardResponse(Board board) {
+    private BoardResponse mapBoardToBoardResponse(Board board, UUID currentUserId) {
         long commentCount = commentRepository.countByBoardId(board.getId());
-        long bookmarkCount = 0; // 북마크 수는 별도 로직으로 구현 필요
+        long bookmarkCount = boardBookmarkRepository.countByBoardId(board.getId());
         
         // 사용자 정보 조회
         String userName = "Unknown User"; // 기본값 설정
@@ -314,7 +383,7 @@ public class BoardService implements BoardServiceInterface {
             log.warn("사용자 정보 조회 중 오류 발생: userId={}", board.getUserId(), e);
         }
 
-        boolean isBookmarked = false; // 북마크 여부는 별도 로직으로 구현 필요
+        boolean isBookmarked = currentUserId != null && boardBookmarkRepository.existsByUserIdAndBoardId(currentUserId, board.getId());
         return BoardResponse.builder()
                 .id(board.getId())
                 .title(board.getTitle())
