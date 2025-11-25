@@ -3,6 +3,7 @@ package pluto.upik.domain.bookmark.resolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Controller;
 import pluto.upik.domain.bookmark.data.DTO.BookmarkQuery;
 import pluto.upik.domain.guide.data.DTO.GuideResponse;
@@ -36,6 +37,21 @@ public class BookmarkQueryResolver {
         } catch (Exception e) {
             log.error("GraphQL 쿼리 - 북마크한 가이드 목록 조회 실패", e);
             throw new RuntimeException("북마크 목록 조회 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    @RequireAuth
+    @SchemaMapping(typeName = "BookmarkQuery", field = "isBookmarked")
+    public boolean isBookmarked(BookmarkQuery parent, @Argument UUID guideId) {
+        log.info("GraphQL 쿼리 - 특정 가이드 북마크 여부 조회 요청: guideId={}", guideId);
+        try {
+            UUID userId = securityUtil.getCurrentUserId();
+            boolean bookmarked = bookmarkService.isBookmarked(userId, guideId);
+            log.info("GraphQL 쿼리 - 북마크 여부 조회 완료: userId={}, guideId={}, bookmarked={}", userId, guideId, bookmarked);
+            return bookmarked;
+        } catch (Exception e) {
+            log.error("GraphQL 쿼리 - 북마크 여부 조회 실패: guideId={}", guideId, e);
+            throw new RuntimeException("북마크 여부 조회 중 오류가 발생했습니다.", e);
         }
     }
 }
