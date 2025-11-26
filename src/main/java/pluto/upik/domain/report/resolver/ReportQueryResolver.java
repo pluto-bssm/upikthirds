@@ -47,15 +47,16 @@ public class ReportQueryResolver {
      */
     @RequireAuth
     @SchemaMapping(typeName = "ReportQuery", field = "getReportsByUser")
-    public List<ReportResponse> getReportsByUser(ReportQuery parent, @Argument UUID userId) {
+    public List<ReportResponse> getReportsByUser(ReportQuery parent, @Argument String userId) {
         try {
-            log.info("사용자 신고 조회 요청: userId={}", userId);
+            UUID parsedUserId = parseUuid(userId, "userId");
+            log.info("사용자 신고 조회 요청: userId={}", parsedUserId);
 
-            List<ReportResponse> reports = reportApplication.getReportsByUser(userId);
-            log.info("사용자 신고 조회 완료: userId={}, 결과 개수={}", userId, reports.size());
+            List<ReportResponse> reports = reportApplication.getReportsByUser(parsedUserId);
+            log.info("사용자 신고 조회 완료: userId={}, 결과 개수={}", parsedUserId, reports.size());
             return reports;
-        } catch (Exception e) {
-            log.warn("사용자 신고 조회 실패", e);
+        } catch (Exception e) { // UUID 변환 실패 등 모든 예외를 여기서 잡아 빈 배열 반환
+            log.warn("사용자 신고 조회 실패 - 입력값: {}", userId, e);
             return new ArrayList<>();
         }
     }
@@ -65,15 +66,16 @@ public class ReportQueryResolver {
      */
     @RequireAuth
     @SchemaMapping(typeName = "ReportQuery", field = "getReportsByTarget")
-    public List<ReportResponse> getReportsByTarget(ReportQuery parent, @Argument UUID targetId) {
+    public List<ReportResponse> getReportsByTarget(ReportQuery parent, @Argument String targetId) {
         try {
-            log.info("신고 대상 조회 요청: targetId={}", targetId);
+            UUID parsedTargetId = parseUuid(targetId, "targetId");
+            log.info("신고 대상 조회 요청: targetId={}", parsedTargetId);
 
-            List<ReportResponse> reports = reportApplication.getReportsByTarget(targetId);
-            log.info("신고 대상 조회 완료: targetId={}, 결과 개수={}", targetId, reports.size());
+            List<ReportResponse> reports = reportApplication.getReportsByTarget(parsedTargetId);
+            log.info("신고 대상 조회 완료: targetId={}, 결과 개수={}", parsedTargetId, reports.size());
             return reports;
-        } catch (Exception e) {
-            log.warn("신고 대상 조회 실패", e);
+        } catch (Exception e) { // UUID 변환 실패 등 모든 예외를 여기서 잡아 빈 배열 반환
+            log.warn("신고 대상 조회 실패 - 입력값: {}", targetId, e);
             return new ArrayList<>();
         }
     }
@@ -93,6 +95,26 @@ public class ReportQueryResolver {
         } catch (Exception e) {
             log.warn("모든 신고 조회 실패", e);
             return new ArrayList<>();
+        }
+    }
+
+    private UUID parseUuid(String raw, String fieldName) {
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required");
+        }
+        try {
+            return UUID.fromString(raw);
+        } catch (IllegalArgumentException invalid) {
+            String cleaned = raw == null ? "" : raw.replace("-", "");
+            if (cleaned.length() == 32) {
+                String canonical = cleaned.substring(0, 8) + "-" +
+                        cleaned.substring(8, 12) + "-" +
+                        cleaned.substring(12, 16) + "-" +
+                        cleaned.substring(16, 20) + "-" +
+                        cleaned.substring(20);
+                return UUID.fromString(canonical);
+            }
+            throw new IllegalArgumentException("Invalid " + fieldName + " format: " + raw, invalid);
         }
     }
 }
