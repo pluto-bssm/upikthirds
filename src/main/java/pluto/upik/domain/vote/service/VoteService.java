@@ -19,6 +19,8 @@ import pluto.upik.domain.vote.repository.VoteRepository;
 import pluto.upik.domain.voteResponse.data.model.VoteResponse;
 import pluto.upik.domain.voteResponse.repository.VoteResponseRepository;
 import pluto.upik.domain.voteResponse.service.VoteResponseService;
+import pluto.upik.domain.tail.data.model.Tail;
+import pluto.upik.domain.tail.repository.TailRepository;
 import pluto.upik.shared.exception.ResourceNotFoundException;
 import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
@@ -39,6 +41,7 @@ public class VoteService {
     private final VoteResponseRepository voteResponseRepository;
     private final UserRepository userRepository;
     private final VoteResponseService voteResponseService;
+    private final TailRepository tailRepository;
 
     // 더미 사용자 ID
     private static final UUID DUMMY_USER_ID = UUID.fromString("e49207e8-471a-11f0-937c-42010a800003");
@@ -183,6 +186,7 @@ public class VoteService {
 
         Optional<VoteResponse> userResponse = findUserResponse(userId, voteId);
         boolean hasVoted = userResponse.isPresent();
+        Optional<Tail> tail = tailRepository.findFirstByVote(vote);
 
         return VoteDetailPayload.builder()
                 .id(vote.getId().toString())
@@ -199,6 +203,8 @@ public class VoteService {
                 .hasVoted(hasVoted)
                 .myOptionId(userResponse.map(vr -> vr.getSelectedOption().getId().toString()).orElse(null))
                 .myOptionContent(userResponse.map(vr -> vr.getSelectedOption().getContent()).orElse(null))
+                .tailId(tail.map(t -> t.getId().toString()).orElse(null))
+                .tailQuestion(tail.map(Tail::getQuestion).orElse(null))
                 .build();
     }
 

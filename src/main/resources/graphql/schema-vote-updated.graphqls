@@ -158,6 +158,12 @@ type VotePayload {
 
   "현재 사용자가 선택한 옵션 내용 (투표에 참여한 경우에만 반환)"
   myOptionContent: String
+
+  "투표에 등록된 꼬리 질문 ID (존재하는 경우)"
+  tailId: String
+
+  "투표에 등록된 꼬리 질문 내용 (존재하는 경우)"
+  tailQuestion: String
 }
 
 """
