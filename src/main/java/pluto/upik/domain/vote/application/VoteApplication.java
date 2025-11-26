@@ -90,7 +90,6 @@ public class VoteApplication {
         List<Option> savedOptions = new ArrayList<>();
         for (String optionContent : input.getOptions()) {
             Option option = Option.builder()
-                    .id(UUID.randomUUID())
                     .vote(savedVote)
                     .content(optionContent)
                     .build();
