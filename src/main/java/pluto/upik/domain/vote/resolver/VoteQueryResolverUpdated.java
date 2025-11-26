@@ -49,7 +49,7 @@ public class VoteQueryResolverUpdated {
     @SchemaMapping(typeName = "VoteQuery", field = "getVoteById")
     public VoteDetailPayload getVoteById(@Argument String id) {
         UUID userId = securityUtil.isAuthenticated() ? securityUtil.getCurrentUserId() : null;
-        return voteService.getVoteById(UUID.fromString(id), userId);
+        return voteService.getVoteById(parseUuid(id, "id"), userId);
     }
 
     /**
@@ -97,5 +97,25 @@ public class VoteQueryResolverUpdated {
         boolean include = (includeExpired != null) ? includeExpired : true;
         boolean filterHasVoted = (includeHasVoted != null) ? includeHasVoted : false;
         return voteService.getMyVotes(userId, include, filterHasVoted);
+    }
+
+    private UUID parseUuid(String raw, String fieldName) {
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required");
+        }
+        try {
+            return UUID.fromString(raw);
+        } catch (IllegalArgumentException invalid) {
+            String cleaned = raw.replace("-", "");
+            if (cleaned.length() == 32) {
+                String canonical = cleaned.substring(0, 8) + "-" +
+                        cleaned.substring(8, 12) + "-" +
+                        cleaned.substring(12, 16) + "-" +
+                        cleaned.substring(16, 20) + "-" +
+                        cleaned.substring(20);
+                return UUID.fromString(canonical);
+            }
+            throw new IllegalArgumentException("Invalid " + fieldName + " format: " + raw, invalid);
+        }
     }
 }

@@ -1,11 +1,21 @@
 package pluto.upik.domain.voteResponse.data.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import pluto.upik.domain.option.data.model.Option;
 import pluto.upik.domain.vote.data.model.Vote;
 import pluto.upik.shared.oauth2jwt.entity.User;
@@ -30,8 +40,9 @@ public class VoteResponse {
      * 투표 응답 ID (기본 키)
      */
     @Id
-    @Column(columnDefinition = "uuid")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     /**

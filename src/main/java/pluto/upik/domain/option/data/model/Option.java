@@ -5,6 +5,8 @@ import lombok.*;
 import pluto.upik.domain.vote.data.model.Vote;
 
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * 투표 옵션 엔티티
@@ -21,6 +23,8 @@ public class Option {
      * 옵션 ID
      */
     @Id
+    @GeneratedValue
+    @JdbcTypeCode(SqlTypes.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
