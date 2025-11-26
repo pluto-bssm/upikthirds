@@ -41,7 +41,7 @@ public interface VoteRepository extends JpaRepository<Vote, UUID> {
      * @param currentDate 현재 날짜
      * @return 사용자가 생성한 진행 중인 투표 목록
      */
-    @Query("SELECT v FROM Vote v WHERE v.user.id = :userId AND v.finishedAt > :currentDate")
+    @Query("SELECT v FROM Vote v WHERE v.user.id = :userId AND v.finishedAt > :currentDate AND v.status = pluto.upik.domain.vote.data.model.Vote.Status.OPEN")
     List<Vote> findActiveVotesByUserId(UUID userId, LocalDate currentDate);
 
     /**
@@ -50,7 +50,7 @@ public interface VoteRepository extends JpaRepository<Vote, UUID> {
      * @param currentDate 현재 날짜
      * @return 진행 중인 투표 목록
      */
-    @Query("SELECT v FROM Vote v WHERE v.finishedAt > :currentDate")
+    @Query("SELECT v FROM Vote v WHERE v.finishedAt > :currentDate AND v.status = pluto.upik.domain.vote.data.model.Vote.Status.OPEN")
     List<Vote> findActiveVotes(LocalDate currentDate);
 
     /**
