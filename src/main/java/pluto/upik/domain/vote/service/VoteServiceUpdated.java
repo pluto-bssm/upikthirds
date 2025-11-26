@@ -20,6 +20,7 @@ import pluto.upik.domain.voteResponse.repository.VoteResponseRepository;
 import pluto.upik.domain.voteResponse.service.VoteResponseService;
 import pluto.upik.domain.tail.data.model.Tail;
 import pluto.upik.domain.tail.repository.TailRepository;
+import pluto.upik.domain.tail.repository.TailResponseRepository;
 import pluto.upik.shared.cache.CacheNames;
 import pluto.upik.shared.exception.ResourceNotFoundException;
 import pluto.upik.shared.oauth2jwt.entity.User;
@@ -42,6 +43,7 @@ public class VoteServiceUpdated {
     private final UserRepository userRepository;
     private final VoteResponseService voteResponseService;
     private final TailRepository tailRepository;
+    private final TailResponseRepository tailResponseRepository;
 
     @Caching(evict = {
             @CacheEvict(value = CacheNames.VOTE_LIST, allEntries = true),
@@ -158,6 +160,8 @@ public class VoteServiceUpdated {
         Optional<VoteResponse> userResponse = findUserResponse(userId, voteId);
         boolean hasVoted = userResponse.isPresent();
         Optional<Tail> tail = tailRepository.findFirstByVote(vote);
+        Optional<pluto.upik.domain.tail.data.model.TailResponse> myTailResponse =
+                (userId != null) ? tailResponseRepository.findByUserIdAndVoteId(userId, voteId) : Optional.empty();
 
         return VoteDetailPayload.builder()
                 .id(vote.getId().toString())
@@ -175,6 +179,9 @@ public class VoteServiceUpdated {
                 .myOptionContent(userResponse.map(vr -> vr.getSelectedOption().getContent()).orElse(null))
                 .tailId(tail.map(t -> t.getId().toString()).orElse(null))
                 .tailQuestion(tail.map(Tail::getQuestion).orElse(null))
+                .myTailId(myTailResponse.map(tr -> tr.getTail().getId().toString()).orElse(null))
+                .myTailQuestion(myTailResponse.map(tr -> tr.getTail().getQuestion()).orElse(null))
+                .myTailAnswer(myTailResponse.map(pluto.upik.domain.tail.data.model.TailResponse::getAnswer).orElse(null))
                 .build();
     }
 

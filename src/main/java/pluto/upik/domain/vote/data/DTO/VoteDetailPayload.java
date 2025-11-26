@@ -30,4 +30,7 @@ public class VoteDetailPayload implements Serializable {
     private String myOptionContent; // 사용자가 선택한 옵션 내용
     private String tailId; // 투표에 등록된 꼬리 질문 ID
     private String tailQuestion; // 투표에 등록된 꼬리 질문 내용
+    private String myTailId; // 사용자가 답변한 꼬리 질문 ID
+    private String myTailQuestion; // 사용자가 답변한 꼬리 질문 내용
+    private String myTailAnswer; // 사용자가 답변한 꼬리 질문 텍스트
 }

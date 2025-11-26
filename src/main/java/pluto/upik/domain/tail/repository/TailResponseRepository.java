@@ -52,4 +52,10 @@ public interface TailResponseRepository extends JpaRepository<TailResponse, UUID
 
     // Tail 별 TailResponse 리스트 조회
     List<TailResponse> findByTail(Tail tail);
+
+    /**
+     * 특정 사용자가 특정 투표의 꼬리 질문에 남긴 응답 조회
+     */
+    @Query("SELECT tr FROM TailResponse tr JOIN tr.tail t WHERE tr.user.id = :userId AND t.vote.id = :voteId")
+    java.util.Optional<TailResponse> findByUserIdAndVoteId(UUID userId, UUID voteId);
 }

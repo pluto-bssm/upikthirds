@@ -18,6 +18,7 @@ import lombok.ToString;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import pluto.upik.domain.option.data.model.Option;
+import pluto.upik.domain.tail.data.model.Tail;
 import pluto.upik.domain.vote.data.model.Vote;
 import pluto.upik.shared.oauth2jwt.entity.User;
 
@@ -66,6 +67,13 @@ public class VoteResponse {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private Option selectedOption;
+
+    /**
+     * 사용자가 답변한 꼬리 질문
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tail_id")
+    private Tail tail;
 
     /**
      * 생성 일시
