@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface VoteResponseRepository extends JpaRepository<VoteResponse, Long> {
+public interface VoteResponseRepository extends JpaRepository<VoteResponse, UUID> {
     List<VoteResponse> findByVoteId(UUID voteId);
 
     /**
