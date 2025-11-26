@@ -6,6 +6,7 @@ import pluto.upik.domain.voteResponse.data.DTO.CreateVoteResponseInput;
 import pluto.upik.domain.voteResponse.data.DTO.VoteResponsePayload;
 import pluto.upik.domain.voteResponse.service.VoteResponseService;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -28,5 +29,9 @@ public class VoteResponseApplication {
 
     public Long getOptionResponseCount(UUID optionId) {
         return voteResponseService.getOptionResponseCount(optionId);
+    }
+
+    public List<VoteResponsePayload> getMyVoteResponses(UUID userId) {
+        return voteResponseService.getMyVoteResponses(userId);
     }
 }

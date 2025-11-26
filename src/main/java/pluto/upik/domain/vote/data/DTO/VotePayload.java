@@ -29,6 +29,8 @@ public class VotePayload implements Serializable {
     private int totalResponses;
     private List<OptionWithStatsPayload> options;
     private boolean hasVoted; // 사용자가 투표에 참여했는지 여부
+    private String myOptionId; // 사용자가 선택한 옵션 ID
+    private String myOptionContent; // 사용자가 선택한 옵션 내용
 
     public boolean getHasVoted() {
         return this.hasVoted;
@@ -73,7 +75,7 @@ public class VotePayload implements Serializable {
      */
     public static VotePayload fromEntityWithStats(Vote vote, List<Option> options,
                                                  List<OptionWithStatsPayload> optionStats, int totalResponses) {
-        return fromEntityWithStats(vote, options, optionStats, totalResponses, false);
+        return fromEntityWithStats(vote, options, optionStats, totalResponses, false, null, null);
     }
     
     /**
@@ -89,6 +91,24 @@ public class VotePayload implements Serializable {
     public static VotePayload fromEntityWithStats(Vote vote, List<Option> options,
                                                  List<OptionWithStatsPayload> optionStats, int totalResponses,
                                                  boolean hasVoted) {
+        return fromEntityWithStats(vote, options, optionStats, totalResponses, hasVoted, null, null);
+    }
+
+    /**
+     * Vote 엔티티와 옵션, 옵션 통계, 총 응답 수, 사용자 참여 여부, 사용자가 선택한 옵션 정보를 포함한 VotePayload 생성합니다.
+     *
+     * @param vote 투표 엔티티
+     * @param options 옵션 목록
+     * @param optionStats 각 옵션 통계
+     * @param totalResponses 전체 응답 수
+     * @param hasVoted 사용자가 투표했는지 여부
+     * @param myOptionId 사용자가 선택한 옵션 ID
+     * @param myOptionContent 사용자가 선택한 옵션 내용
+     * @return VotePayload
+     */
+    public static VotePayload fromEntityWithStats(Vote vote, List<Option> options,
+                                                 List<OptionWithStatsPayload> optionStats, int totalResponses,
+                                                 boolean hasVoted, String myOptionId, String myOptionContent) {
         return VotePayload.builder()
                 .id(vote.getId().toString())
                 .title(vote.getQuestion())
@@ -100,6 +120,8 @@ public class VotePayload implements Serializable {
                 .totalResponses(totalResponses)
                 .options(optionStats)
                 .hasVoted(hasVoted)
+                .myOptionId(myOptionId)
+                .myOptionContent(myOptionContent)
                 .build();
     }
 }

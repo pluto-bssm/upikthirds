@@ -5,9 +5,11 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import pluto.upik.domain.voteResponse.application.VoteResponseApplication;
+import pluto.upik.domain.voteResponse.data.DTO.VoteResponsePayload;
 import pluto.upik.shared.oauth2jwt.annotation.RequireAuth;
 import pluto.upik.shared.oauth2jwt.util.SecurityUtil;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -32,5 +34,12 @@ public class VoteResponseQueryResolver {
     public Boolean hasUserVoted(@Argument UUID voteId) {
         UUID userId = securityUtil.getCurrentUserId();
         return voteResponseApplication.hasUserVoted(userId, voteId);
+    }
+
+    @RequireAuth
+    @SchemaMapping(typeName = "VoteResponseQuery", field = "getMyVoteResponses")
+    public List<VoteResponsePayload> getMyVoteResponses() {
+        UUID userId = securityUtil.getCurrentUserId();
+        return voteResponseApplication.getMyVoteResponses(userId);
     }
 }
