@@ -157,8 +157,8 @@ public class VoteApplication {
             case CUSTOM_DAYS:
                 return now.plusDays(customDays != null ? customDays : 7);
             case PARTICIPANT_COUNT:
-                // 참여자 수 기준은 날짜를 매우 미래로 설정 (실질적으로 무제한)
-                return now.plusYears(10);
+                // 참여자 수 기준이어도 기본 마감은 생성일 + 7일
+                return now.plusDays(7);
             default:
                 return now.plusDays(7);
         }
