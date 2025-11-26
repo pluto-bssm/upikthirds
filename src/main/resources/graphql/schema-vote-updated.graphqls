@@ -152,6 +152,12 @@ type VotePayload {
 
   "현재 사용자의 투표 참여 여부"
   hasVoted: Boolean
+
+  "현재 사용자가 선택한 옵션 ID (투표에 참여한 경우에만 반환)"
+  myOptionId: String
+
+  "현재 사용자가 선택한 옵션 내용 (투표에 참여한 경우에만 반환)"
+  myOptionContent: String
 }
 
 """
@@ -405,6 +411,12 @@ type VoteDetailPayload {
 
   "현재 사용자의 투표 참여 여부"
   hasVoted: Boolean
+
+  "현재 사용자가 선택한 옵션 ID (투표에 참여한 경우에만 반환)"
+  myOptionId: String
+
+  "현재 사용자가 선택한 옵션 내용 (투표에 참여한 경우에만 반환)"
+  myOptionContent: String
 }
 
 """

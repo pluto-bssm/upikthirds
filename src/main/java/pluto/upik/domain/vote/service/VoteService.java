@@ -16,6 +16,7 @@ import pluto.upik.domain.vote.data.DTO.VoteDetailPayload;
 import pluto.upik.domain.vote.data.DTO.VotePayload;
 import pluto.upik.domain.vote.data.model.Vote;
 import pluto.upik.domain.vote.repository.VoteRepository;
+import pluto.upik.domain.voteResponse.data.model.VoteResponse;
 import pluto.upik.domain.voteResponse.repository.VoteResponseRepository;
 import pluto.upik.domain.voteResponse.service.VoteResponseService;
 import pluto.upik.shared.exception.ResourceNotFoundException;
@@ -111,15 +112,17 @@ public class VoteService {
                         percentage));
             }
 
-            // 사용자가 이 투표에 참여했는지 확인
-            boolean hasVoted = voteResponseService.hasUserVoted(userId, vote.getId());
+            Optional<VoteResponse> userResponse = findUserResponse(userId, vote.getId());
+            boolean hasVoted = userResponse.isPresent();
 
             votePayloads.add(VotePayload.fromEntityWithStats(
                     vote,
                     options,
                     optionStats,
                     totalResponses.intValue(),
-                    hasVoted));
+                    hasVoted,
+                    userResponse.map(vr -> vr.getSelectedOption().getId().toString()).orElse(null),
+                    userResponse.map(vr -> vr.getSelectedOption().getContent()).orElse(null)));
         }
 
         return votePayloads;
@@ -178,8 +181,8 @@ public class VoteService {
             }
         }
 
-        // 사용자가 이 투표에 참여했는지 확인
-        boolean hasVoted = voteResponseService.hasUserVoted(userId, voteId);
+        Optional<VoteResponse> userResponse = findUserResponse(userId, voteId);
+        boolean hasVoted = userResponse.isPresent();
 
         return VoteDetailPayload.builder()
                 .id(vote.getId().toString())
@@ -194,6 +197,8 @@ public class VoteService {
                 .totalResponses(totalResponses.intValue())
                 .options(optionStats)
                 .hasVoted(hasVoted)
+                .myOptionId(userResponse.map(vr -> vr.getSelectedOption().getId().toString()).orElse(null))
+                .myOptionContent(userResponse.map(vr -> vr.getSelectedOption().getContent()).orElse(null))
                 .build();
     }
 
@@ -327,8 +332,15 @@ public class VoteService {
                     // 더미 옵션 목록 생성
                     List<Option> dummyOptions = new ArrayList<>();
                     // fromEntity 메서드 사용
-                    return VotePayload.fromEntity(vote, dummyOptions);
-                })
+                return VotePayload.fromEntity(vote, dummyOptions);
+            })
                 .collect(Collectors.toList());
+    }
+
+    private Optional<VoteResponse> findUserResponse(UUID userId, UUID voteId) {
+        if (userId == null) {
+            return Optional.empty();
+        }
+        return voteResponseRepository.findByUserIdAndVoteId(userId, voteId);
     }
 }

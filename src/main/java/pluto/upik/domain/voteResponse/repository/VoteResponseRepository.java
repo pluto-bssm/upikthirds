@@ -25,6 +25,10 @@ public interface VoteResponseRepository extends JpaRepository<VoteResponse, Long
     @Query("SELECT vr FROM VoteResponse vr WHERE vr.user.id = :userId AND vr.vote.id = :voteId")
     Optional<VoteResponse> findByUserIdAndVoteId(@Param("userId") UUID userId, @Param("voteId") UUID voteId);
 
+    // 특정 사용자가 응답한 투표 목록 조회
+    @Query("SELECT vr FROM VoteResponse vr WHERE vr.user.id = :userId ORDER BY vr.createdAt DESC")
+    List<VoteResponse> findByUserIdOrderByCreatedAtDesc(@Param("userId") UUID userId);
+
     // 특정 투표의 총 응답 수
     @Query("SELECT COUNT(vr) FROM VoteResponse vr WHERE vr.vote.id = :voteId")
     Long countByVoteId(@Param("voteId") UUID voteId);

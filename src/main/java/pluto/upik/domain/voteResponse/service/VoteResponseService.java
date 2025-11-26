@@ -19,6 +19,7 @@ import pluto.upik.shared.oauth2jwt.entity.User;
 import pluto.upik.shared.oauth2jwt.repository.UserRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -129,5 +130,16 @@ public class VoteResponseService {
     @Transactional(readOnly = true)
     public Long getOptionResponseCount(UUID optionId) {
         return voteResponseRepository.countByOptionId(optionId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VoteResponsePayload> getMyVoteResponses(UUID userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("사용자 ID가 필요합니다.");
+        }
+
+        return voteResponseRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(VoteResponsePayload::fromEntity)
+                .toList();
     }
 }
